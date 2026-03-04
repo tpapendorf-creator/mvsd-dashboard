@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVSD #320 District Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ═══ HEADER ═══════════════════════════════════════════ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-eyebrow">
+        <span class="district-badge">◈ MOUNT VERNON SCHOOL DISTRICT #320</span>
+        <span class="data-badge">2022–23 DATA · OSPI &amp; NCES</span>
+      </div>
+      <h1 class="site-title">District Performance Dashboard</h1>
+      <p class="site-subtitle">Washington State &amp; National Comparison</p>
+      <div class="kpi-strip">
+        <div class="kpi-chip">
+          <span class="kpi-val">6,441</span>
+          <span class="kpi-label">Students Enrolled</span>
+        </div>
+        <div class="kpi-chip">
+          <span class="kpi-val">14</span>
+          <span class="kpi-label">Schools</span>
+        </div>
+        <div class="kpi-chip">
+          <span class="kpi-val">16.2:1</span>
+          <span class="kpi-label">Student-Teacher Ratio</span>
+        </div>
+        <div class="kpi-chip">
+          <span class="kpi-val">PreK–12</span>
+          <span class="kpi-label">Skagit County, WA</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ LEGEND ════════════════════════════════════════════ -->
+  <div class="global-legend">
+    <div class="legend-item">
+      <span class="legend-dot dot-mvsd"></span>Mount Vernon SD #320
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot dot-wa"></span>Washington State
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot dot-nat"></span>National Average
+    </div>
+  </div>
+
+  <!-- ═══ MAIN CONTENT ══════════════════════════════════════ -->
+  <main class="dashboard-main">
+
+    <!-- ── SECTION 1: ACADEMIC ACHIEVEMENT ──────────────── -->
+    <section class="dash-section">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <div class="section-head-text">
+          <h2>Academic Achievement</h2>
+          <p>Smarter Balanced proficiency rates and 4-year graduation rate</p>
+        </div>
+      </div>
+
+      <div class="grid grid-60-40">
+        <div class="card">
+          <div class="card-header">
+            <h3>State Assessment Proficiency</h3>
+            <span class="card-tag">% Meeting or Exceeding Standard</span>
+          </div>
+          <p class="card-note">Smarter Balanced Assessment (SBAC) · 2022–23 · Grades 3–8 &amp; 10</p>
+          <div class="chart-wrap" style="height: 240px">
+            <canvas id="proficiencyChart"></canvas>
+          </div>
+          <div class="chart-gap-note">
+            MVSD trails WA state average by <strong>16 pts in ELA</strong> and <strong>12 pts in Math</strong>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>4-Year Graduation Rate</h3>
+            <span class="card-tag">Class of 2023 · ACGR</span>
+          </div>
+          <p class="card-note">4-year Adjusted Cohort Graduation Rate</p>
+          <div class="grad-bars">
+            <div class="grad-row">
+              <span class="grad-label">MVSD #320</span>
+              <div class="grad-track">
+                <div class="grad-fill fill-mvsd" style="width:82%">
+                  <span class="grad-pct-label">82%</span>
+                </div>
+              </div>
+            </div>
+            <div class="grad-row">
+              <span class="grad-label">WA State</span>
+              <div class="grad-track">
+                <div class="grad-fill fill-wa" style="width:83.6%">
+                  <span class="grad-pct-label">83.6%</span>
+                </div>
+              </div>
+            </div>
+            <div class="grad-row">
+              <span class="grad-label">National</span>
+              <div class="grad-track">
+                <div class="grad-fill fill-nat" style="width:87.4%">
+                  <span class="grad-pct-label">87.4%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="trend-callout">
+            <span class="trend-arrow">↑</span>
+            <div class="trend-text">
+              MVSD graduation rate has risen <strong>+11 percentage points</strong> over five years — from 71% (2017–18) to 82% (2022–23)
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: STUDENT DEMOGRAPHICS ──────────────── -->
+    <section class="dash-section">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <div class="section-head-text">
+          <h2>Student Demographics</h2>
+          <p>Enrollment composition and socioeconomic profile</p>
+        </div>
+      </div>
+
+      <div class="grid grid-50-50">
+        <div class="card">
+          <div class="card-header">
+            <h3>Racial &amp; Ethnic Enrollment</h3>
+            <span class="card-tag">MVSD #320 · 2023–24</span>
+          </div>
+          <div class="donut-layout">
+            <div class="chart-wrap donut-wrap">
+              <canvas id="ethnicityChart"></canvas>
+            </div>
+            <div class="donut-legend" id="ethnicityLegend"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Socioeconomic Indicators</h3>
+            <span class="card-tag">Free &amp; Reduced-Price Lunch Eligibility</span>
+          </div>
+          <p class="card-note">% of students qualifying for FRPL — a key indicator of economic need</p>
+          <div class="frpl-bars">
+            <div class="frpl-row">
+              <span class="frpl-who">MVSD #320</span>
+              <div class="frpl-track">
+                <div class="frpl-fill fill-mvsd" style="width:47.8%"></div>
+              </div>
+              <span class="frpl-pct">47.8%</span>
+            </div>
+            <div class="frpl-row">
+              <span class="frpl-who">WA State</span>
+              <div class="frpl-track">
+                <div class="frpl-fill fill-wa" style="width:44%"></div>
+              </div>
+              <span class="frpl-pct">~44%</span>
+            </div>
+            <div class="frpl-row">
+              <span class="frpl-who">National</span>
+              <div class="frpl-track">
+                <div class="frpl-fill fill-nat" style="width:52%"></div>
+              </div>
+              <span class="frpl-pct">~52%</span>
+            </div>
+          </div>
+          <div class="demo-context">
+            <div class="context-stat">
+              <span class="ctx-num">57%</span>
+              <span class="ctx-label">of MVSD students are Hispanic/Latino</span>
+            </div>
+            <div class="context-stat">
+              <span class="ctx-num">2.4×</span>
+              <span class="ctx-label">the WA state Hispanic avg of 24%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: FUNDING & RESOURCES ───────────────── -->
+    <section class="dash-section">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <div class="section-head-text">
+          <h2>Funding &amp; Resources</h2>
+          <p>Per-pupil investment compared to state and national benchmarks</p>
+        </div>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card metric-card">
+          <div class="metric-label">MVSD Spending / Student</div>
+          <div class="metric-value color-mvsd">$20,167</div>
+          <div class="metric-delta delta-up">+$917 above WA median</div>
+          <div class="metric-sub">2022–23 school year</div>
+        </div>
+        <div class="card metric-card">
+          <div class="metric-label">WA State Median / Student</div>
+          <div class="metric-value color-wa">$19,250</div>
+          <div class="metric-delta delta-neutral">Statewide district median</div>
+          <div class="metric-sub">Washington, 2022–23</div>
+        </div>
+        <div class="card metric-card">
+          <div class="metric-label">National Average / Student</div>
+          <div class="metric-value color-nat">$16,281</div>
+          <div class="metric-delta delta-note">U.S. public schools</div>
+          <div class="metric-sub">NEA Estimates, 2022–23</div>
+        </div>
+      </div>
+
+      <div class="card spending-detail-card">
+        <div class="spending-chart-col">
+          <div class="card-header">
+            <h3>Per-Pupil Expenditure</h3>
+            <span class="card-tag">Annual spending comparison</span>
+          </div>
+          <div class="chart-wrap" style="height: 160px">
+            <canvas id="spendingChart"></canvas>
+          </div>
+        </div>
+        <div class="spending-stats-col">
+          <div class="spend-stat">
+            <span class="ss-label">Total District Revenue</span>
+            <span class="ss-val">$132M</span>
+          </div>
+          <div class="spend-stat">
+            <span class="ss-label">Total District Spending</span>
+            <span class="ss-val">$130M</span>
+          </div>
+          <div class="spend-stat">
+            <span class="ss-label">Revenue per Student</span>
+            <span class="ss-val">$20,435</span>
+          </div>
+          <div class="spend-stat">
+            <span class="ss-label">Above WA Median</span>
+            <span class="ss-val color-mvsd">+$917 / student</span>
+          </div>
+          <div class="spend-stat">
+            <span class="ss-label">Above National Avg</span>
+            <span class="ss-val color-mvsd">+$3,886 / student</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: STAFFING ───────────────────────────── -->
+    <section class="dash-section">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <div class="section-head-text">
+          <h2>Staffing</h2>
+          <p>Educator workforce — 2023–24 school year</p>
+        </div>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="card metric-card">
+          <div class="metric-label">Student-Teacher Ratio</div>
+          <div class="metric-value color-mvsd">16.2:1</div>
+          <div class="metric-delta delta-up">Better than WA avg (18.2:1)</div>
+          <div class="metric-sub">2023–24 · NCES</div>
+        </div>
+        <div class="card metric-card">
+          <div class="metric-label">FTE Classroom Teachers</div>
+          <div class="metric-value color-mvsd">398</div>
+          <div class="metric-delta delta-neutral">Full-time equivalent</div>
+          <div class="metric-sub">2023–24 school year</div>
+        </div>
+        <div class="card metric-card">
+          <div class="metric-label">School-Level Admins</div>
+          <div class="metric-value">26.3</div>
+          <div class="metric-delta delta-neutral">FTE school administrators</div>
+          <div class="metric-sub">Principals &amp; asst. principals</div>
+        </div>
+        <div class="card metric-card">
+          <div class="metric-label">District-Level Admins</div>
+          <div class="metric-value">8.3</div>
+          <div class="metric-delta delta-neutral">FTE district administrators</div>
+          <div class="metric-sub">Central office leadership</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">◈ MVSD #320 · District Dashboard</div>
+      <div class="footer-sources">
+        <p class="sources-heading">Data Sources &amp; Methodology</p>
+        <p>
+          Washington State Report Card (OSPI, 2022–23) ·
+          NCES Common Core of Data (2023–24) ·
+          Public School Review (2022–23) ·
+          NEA Rankings &amp; Estimates Report (2024) ·
+          NCES Fast Facts: High School Graduation Rates (2022–23)
+        </p>
+        <p class="sources-footnote">
+          Academic proficiency rates use Washington Smarter Balanced Assessment (SBAC) — not directly comparable to national NAEP scores.
+          Graduation rates use the 4-year Adjusted Cohort Graduation Rate (ACGR) and are nationally comparable.
+          WA state demographic figures are approximate, based on OSPI October enrollment data.
+          FRPL national figure is approximate per NCES CCD 2022–23.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
