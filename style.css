@@ -333,10 +333,17 @@ body {
 }
 .card-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.card-header-main {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex: 1;
   flex-wrap: wrap;
 }
 .card-header h3 {
@@ -504,6 +511,52 @@ body {
 .footer-brand { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.15em; color: var(--mvsd); text-transform: uppercase; white-space: nowrap; padding-top: 3px; }
 .footer-sources { font-size: 0.68rem; color: var(--text-muted); line-height: 1.7; flex: 1; }
 .footer-sources em { color: #3a5540; }
+
+/* ─── EXPORT & DOWNLOAD BUTTONS ─────────────────────────── */
+.export-btn {
+  background: var(--mvsd-dim);
+  border: 1px solid var(--mvsd-border);
+  border-radius: 8px;
+  color: var(--mvsd-bright);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 6px 13px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.export-btn:hover {
+  background: rgba(0, 133, 68, 0.22);
+  border-color: var(--mvsd);
+  box-shadow: 0 0 14px var(--mvsd-dim);
+}
+.dl-chart-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: all 0.2s;
+}
+.dl-chart-btn:hover {
+  border-color: var(--mvsd-border);
+  color: var(--mvsd-bright);
+  background: var(--mvsd-dim);
+}
+.footer-sources a {
+  color: var(--mvsd-bright);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-sources a:hover { color: var(--text-hi); text-decoration: underline; }
 
 /* ─── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 960px) {

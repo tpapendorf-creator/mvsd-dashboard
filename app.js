@@ -582,6 +582,101 @@ function buildStaffingCharts() {
   });
 }
 
+// ─── DOWNLOAD CHART AS PNG ───────────────────────────────
+function downloadChart(chartKey, filename) {
+  const chart = charts[chartKey];
+  if (!chart) return;
+  const src = chart.canvas;
+  const tmp = document.createElement('canvas');
+  tmp.width  = src.width;
+  tmp.height = src.height;
+  const ctx2 = tmp.getContext('2d');
+  ctx2.fillStyle = '#0c1410';
+  ctx2.fillRect(0, 0, tmp.width, tmp.height);
+  ctx2.drawImage(src, 0, 0);
+  const a = document.createElement('a');
+  a.href     = tmp.toDataURL('image/png');
+  a.download = filename + '.png';
+  a.click();
+}
+
+// ─── EXPORT ALL DATA AS CSV ──────────────────────────────
+function exportCSV() {
+  const D    = DATA;
+  const rows = [];
+
+  rows.push(['MVSD #320 — District Performance Dashboard']);
+  rows.push(['Generated', new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })]);
+  rows.push([]);
+
+  rows.push(['KEY METRICS']);
+  rows.push(['Metric', 'MVSD #320', 'WA State', 'National']);
+  rows.push(['Student Enrollment (2023–24)', D.staffing.totalStudents, '', '']);
+  rows.push(['Number of Schools', D.staffing.totalSchools, '', '']);
+  rows.push(['FTE Teachers (2023–24)', D.staffing.fteTeachers, '', '']);
+  rows.push(['Student–Teacher Ratio', D.staffing.studentTeacherRatio.mvsd + ':1', D.staffing.studentTeacherRatio.wa + ':1', D.staffing.studentTeacherRatio.nat + ':1']);
+  rows.push(['Per-Pupil Spending (2022–23)', '$' + D.spending.perPupil.mvsd.toLocaleString(), '$' + D.spending.perPupil.wa.toLocaleString(), '$' + D.spending.perPupil.nat.toLocaleString()]);
+  rows.push(['FRPL Eligibility', D.frpl.mvsd + '%', '~' + D.frpl.wa + '%', '~' + D.frpl.nat + '%']);
+  rows.push([]);
+
+  rows.push(['ACADEMIC PROFICIENCY — SBAC (% Meeting or Exceeding Standard)']);
+  rows.push(['Subgroup', 'Year', 'MVSD Math %', 'MVSD ELA %', 'MVSD Science %', 'WA Math %', 'WA ELA %', 'WA Science %', 'Values Estimated?']);
+  for (const [, sg] of Object.entries(D.proficiency.subgroups)) {
+    for (const yr of D.proficiency.years) {
+      if (!sg.mvsd[yr]) continue;
+      const mv = sg.mvsd[yr];
+      const wa = sg.wa[yr] || [];
+      rows.push([sg.label, yr, mv[0], mv[1], mv[2] ?? 'N/A', wa[0] ?? '', wa[1] ?? '', wa[2] ?? '', sg.estimated ? 'Yes' : 'No']);
+    }
+  }
+  rows.push([]);
+
+  rows.push(['GRADE-LEVEL PROFICIENCY — 2022–23']);
+  rows.push(['Level', 'MVSD ELA %', 'MVSD Math %', 'WA ELA % (approx)', 'WA Math % (approx)']);
+  D.gradeLevel.labels.forEach((lbl, i) => {
+    rows.push([lbl, D.gradeLevel.mvsd.ela[i], D.gradeLevel.mvsd.math[i], D.gradeLevel.wa.ela[i], D.gradeLevel.wa.math[i]]);
+  });
+  rows.push([]);
+
+  rows.push(['GRADUATION RATES — 4-Year ACGR']);
+  rows.push(['Year', 'MVSD %', 'WA State %', 'National %']);
+  D.graduation.years.forEach((yr, i) => {
+    rows.push([yr, D.graduation.mvsd[i], D.graduation.wa[i], D.graduation.national[i]]);
+  });
+  rows.push([]);
+
+  rows.push(['DEMOGRAPHICS — Racial & Ethnic Enrollment']);
+  rows.push(['Group', 'MVSD %', 'WA State %', 'National %']);
+  D.ethnicity.labels.forEach((lbl, i) => {
+    rows.push([lbl, D.ethnicity.mvsd[i], D.ethnicity.wa[i], D.ethnicity.nat[i]]);
+  });
+  rows.push([]);
+
+  rows.push(['DATA SOURCES']);
+  rows.push(['WA State Report Card (OSPI)', 'https://washingtonstatereportcard.ospi.k12.wa.us/']);
+  rows.push(['NCES Common Core of Data',    'https://nces.ed.gov/ccd/']);
+  rows.push(['Public School Review',         'https://www.publicschoolreview.com/']);
+  rows.push(['NEA Rankings & Estimates 2024','https://www.nea.org/resource-library/rankings-estimates-state-state-education-data']);
+  rows.push(['NCES Fast Facts: Graduation',  'https://nces.ed.gov/fastfacts/display.asp?id=805']);
+
+  const csv = rows.map(row =>
+    row.map(cell => {
+      const s = String(cell ?? '');
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? '"' + s.replace(/"/g, '""') + '"'
+        : s;
+    }).join(',')
+  ).join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'MVSD-Dashboard-Data.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ─── CONTROL HANDLERS ────────────────────────────────────
 function bindControls() {
   document.getElementById('ctrl-year').addEventListener('change', e => {
@@ -614,6 +709,25 @@ function bindControls() {
       buildGradeLevelChart();
     });
   });
+
+  // Chart download buttons
+  const chartFilenames = {
+    proficiency: 'MVSD-Proficiency',
+    gradeLevel:  'MVSD-Grade-Level',
+    gradTrend:   'MVSD-Graduation-Trend',
+    ethnicity:   'MVSD-Ethnicity',
+    demoCompare: 'MVSD-Demographics',
+    spending:    'MVSD-Per-Pupil-Spending',
+    ratio:       'MVSD-Student-Teacher-Ratio',
+  };
+  document.querySelectorAll('.dl-chart-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.chart;
+      downloadChart(key, chartFilenames[key] || key);
+    });
+  });
+
+  document.getElementById('export-csv').addEventListener('click', exportCSV);
 }
 
 // ─── TAB HANDLERS ────────────────────────────────────────

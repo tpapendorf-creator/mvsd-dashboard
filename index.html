@@ -56,6 +56,7 @@
     <div class="legend-item"><span class="ldot ldot-nat"></span>National Average</div>
     <div class="legend-sep"></div>
     <div class="legend-note">WA &amp; National lines are benchmarks for context</div>
+    <button class="export-btn" id="export-csv" title="Download all dashboard data as a CSV spreadsheet">⬇ Export Data (CSV)</button>
   </div>
 
   <!-- ═══ TAB NAVIGATION ═══════════════════════════════════ -->
@@ -118,8 +119,11 @@
       <div class="panel-grid grid-60-40">
         <div class="card animate-in">
           <div class="card-header">
-            <h3 id="proficiency-title">State Assessment Proficiency</h3>
-            <span class="card-tag">% Meeting or Exceeding Standard · SBAC</span>
+            <div class="card-header-main">
+              <h3 id="proficiency-title">State Assessment Proficiency</h3>
+              <span class="card-tag">% Meeting or Exceeding Standard · SBAC</span>
+            </div>
+            <button class="dl-chart-btn" data-chart="proficiency" title="Download chart as PNG">⬇ PNG</button>
           </div>
           <div class="chart-wrap" style="height:240px">
             <canvas id="proficiencyChart"></canvas>
@@ -129,8 +133,11 @@
 
         <div class="card animate-in" style="animation-delay:0.08s">
           <div class="card-header">
-            <h3>Grade-Level Breakdown</h3>
-            <span class="card-tag">ELA &amp; Math by school level · 2022–23</span>
+            <div class="card-header-main">
+              <h3>Grade-Level Breakdown</h3>
+              <span class="card-tag">ELA &amp; Math by school level · 2022–23</span>
+            </div>
+            <button class="dl-chart-btn" data-chart="gradeLevel" title="Download chart as PNG">⬇ PNG</button>
           </div>
           <div class="subject-toggle">
             <button class="subj-btn active" data-subject="ela">ELA / Reading</button>
@@ -146,8 +153,11 @@
       <!-- Graduation Trend -->
       <div class="card animate-in" style="animation-delay:0.14s;margin-top:20px">
         <div class="card-header">
-          <h3>Graduation Rate — 5-Year Trend</h3>
-          <span class="card-tag">4-Year Adjusted Cohort Graduation Rate (ACGR)</span>
+          <div class="card-header-main">
+            <h3>Graduation Rate — 5-Year Trend</h3>
+            <span class="card-tag">4-Year Adjusted Cohort Graduation Rate (ACGR)</span>
+          </div>
+          <button class="dl-chart-btn" data-chart="gradTrend" title="Download chart as PNG">⬇ PNG</button>
         </div>
         <div class="grad-highlight-row">
           <div class="grad-hl">
@@ -179,8 +189,11 @@
 
         <div class="card animate-in">
           <div class="card-header">
-            <h3>Racial &amp; Ethnic Enrollment</h3>
-            <span class="card-tag">MVSD #320 · 2023–24</span>
+            <div class="card-header-main">
+              <h3>Racial &amp; Ethnic Enrollment</h3>
+              <span class="card-tag">MVSD #320 · 2023–24</span>
+            </div>
+            <button class="dl-chart-btn" data-chart="ethnicity" title="Download chart as PNG">⬇ PNG</button>
           </div>
           <div class="donut-layout">
             <div style="width:200px;height:200px;flex-shrink:0">
@@ -192,8 +205,11 @@
 
         <div class="card animate-in" style="animation-delay:0.08s">
           <div class="card-header">
-            <h3>Demographic Comparison</h3>
-            <span class="card-tag">MVSD vs WA State vs National</span>
+            <div class="card-header-main">
+              <h3>Demographic Comparison</h3>
+              <span class="card-tag">MVSD vs WA State vs National</span>
+            </div>
+            <button class="dl-chart-btn" data-chart="demoCompare" title="Download chart as PNG">⬇ PNG</button>
           </div>
           <div class="chart-wrap" style="height:270px">
             <canvas id="demoCompareChart"></canvas>
@@ -258,8 +274,11 @@
 
       <div class="card animate-in" style="margin-top:20px;animation-delay:0.2s">
         <div class="card-header">
-          <h3>Per-Pupil Expenditure</h3>
-          <span class="card-tag">Annual current spending per student</span>
+          <div class="card-header-main">
+            <h3>Per-Pupil Expenditure</h3>
+            <span class="card-tag">Annual current spending per student</span>
+          </div>
+          <button class="dl-chart-btn" data-chart="spending" title="Download chart as PNG">⬇ PNG</button>
         </div>
         <div class="spending-layout">
           <div class="chart-wrap" style="height:170px;flex:1">
@@ -307,8 +326,11 @@
 
       <div class="card animate-in" style="margin-top:20px;animation-delay:0.25s">
         <div class="card-header">
-          <h3>Student–Teacher Ratio Comparison</h3>
-          <span class="card-tag">Lower is better — fewer students per teacher</span>
+          <div class="card-header-main">
+            <h3>Student–Teacher Ratio Comparison</h3>
+            <span class="card-tag">Lower is better — fewer students per teacher</span>
+          </div>
+          <button class="dl-chart-btn" data-chart="ratio" title="Download chart as PNG">⬇ PNG</button>
         </div>
         <div class="chart-wrap" style="height:160px">
           <canvas id="ratioChart"></canvas>
@@ -325,11 +347,11 @@
       <span class="footer-brand">◈ MVSD #320 · District Dashboard</span>
       <div class="footer-sources">
         <strong>Sources:</strong>
-        Washington State Report Card (OSPI, 2022–23) ·
-        NCES Common Core of Data (2023–24) ·
-        Public School Review (2022–23) ·
-        NEA Rankings &amp; Estimates (2024) ·
-        NCES Fast Facts: Graduation Rates (2022–23)
+        <a href="https://washingtonstatereportcard.ospi.k12.wa.us/" target="_blank" rel="noopener">WA State Report Card · OSPI (2022–23)</a> ·
+        <a href="https://nces.ed.gov/ccd/" target="_blank" rel="noopener">NCES Common Core of Data (2023–24)</a> ·
+        <a href="https://www.publicschoolreview.com/" target="_blank" rel="noopener">Public School Review (2022–23)</a> ·
+        <a href="https://www.nea.org/resource-library/rankings-estimates-state-state-education-data" target="_blank" rel="noopener">NEA Rankings &amp; Estimates (2024)</a> ·
+        <a href="https://nces.ed.gov/fastfacts/display.asp?id=805" target="_blank" rel="noopener">NCES Fast Facts: Graduation Rates</a>
         <br>
         <em>
           Academic proficiency uses Smarter Balanced (SBAC) — not directly comparable to national NAEP.
