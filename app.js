@@ -129,6 +129,7 @@ function switchTab(tabId) {
   if (tabId === 'demographics') { buildDemographicsCharts(); animateFrplBars(); }
   if (tabId === 'funding')      { buildFundingCharts(); }
   if (tabId === 'staffing')     { buildStaffingCharts(); }
+  if (tabId === 'strategic')    { buildStrategicTab(); staggerCards(panel); }
 }
 
 // ─── PROFICIENCY CHART ───────────────────────────────────
@@ -580,6 +581,156 @@ function buildStaffingCharts() {
       },
     },
   });
+}
+
+// ─── BUS SVG GENERATOR ───────────────────────────────────
+function buildBusSVG(greenCount, idx) {
+  // Unique ID prefix so multiple SVGs don't conflict
+  const p = `b${idx}`;
+
+  // 10 dot positions: 2 columns × 5 rows, filled left-then-right each row, top to bottom
+  const positions = [
+    [50,83],[90,83],
+    [50,113],[90,113],
+    [50,143],[90,143],
+    [50,173],[90,173],
+    [50,203],[90,203],
+  ];
+
+  const dots = positions.map(([cx, cy], i) => {
+    if (i < greenCount) {
+      return `<circle cx="${cx}" cy="${cy}" r="12" fill="#008544"/>`;
+    } else {
+      return `<circle cx="${cx}" cy="${cy}" r="12" fill="#F0F0F0" stroke="rgba(0,0,0,0.1)" stroke-width="0.8"/>`;
+    }
+  }).join('');
+
+  return `<svg viewBox="0 0 140 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <filter id="${p}sh" x="-30%" y="-10%" width="160%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.20"/>
+    </filter>
+    <linearGradient id="${p}bg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#C47800"/>
+      <stop offset="16%"  stop-color="#FFB500"/>
+      <stop offset="50%"  stop-color="#FFC835"/>
+      <stop offset="84%"  stop-color="#FFB500"/>
+      <stop offset="100%" stop-color="#C47800"/>
+    </linearGradient>
+    <linearGradient id="${p}edge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0.12"/>
+      <stop offset="30%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="70%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.12"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Drop shadow -->
+  <rect x="10" y="14" width="120" height="238" rx="13" fill="#000" opacity="0.16" filter="url(#${p}sh)"/>
+
+  <!-- Main bus body -->
+  <rect x="8" y="8" width="124" height="244" rx="13" fill="url(#${p}bg)"/>
+
+  <!-- Edge shading for 3-D depth -->
+  <rect x="8" y="8" width="124" height="244" rx="13" fill="url(#${p}edge)"/>
+
+  <!-- Roof cap / top trim strip -->
+  <rect x="8" y="8" width="124" height="13" rx="13" fill="#A86800" opacity="0.60"/>
+
+  <!-- Vent marks above windshield -->
+  <rect x="27" y="19" width="22" height="4" rx="1.5" fill="#7A4A00" opacity="0.55"/>
+  <rect x="91" y="19" width="22" height="4" rx="1.5" fill="#7A4A00" opacity="0.55"/>
+
+  <!-- Windshield left pane -->
+  <rect x="17" y="26" width="46" height="34" rx="4" fill="#1C1C1C"/>
+  <!-- Windshield right pane -->
+  <rect x="77" y="26" width="46" height="34" rx="4" fill="#1C1C1C"/>
+  <!-- Windshield sheen (subtle reflection) -->
+  <rect x="21" y="29" width="12" height="7" rx="2" fill="#fff" opacity="0.05"/>
+  <rect x="81" y="29" width="12" height="7" rx="2" fill="#fff" opacity="0.05"/>
+
+  <!-- Left side window panels (5 stacked) -->
+  <rect x="8" y="68"  width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="8" y="96"  width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="8" y="124" width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="8" y="152" width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="8" y="180" width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+
+  <!-- Right side window panels (5 stacked) -->
+  <rect x="117" y="68"  width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="117" y="96"  width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="117" y="124" width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="117" y="152" width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+  <rect x="117" y="180" width="15" height="22" rx="2" fill="#1C1C1C" opacity="0.78"/>
+
+  <!-- Left mirror -->
+  <rect x="0"   y="42" width="9" height="13" rx="3" fill="#B87400"/>
+  <!-- Right mirror -->
+  <rect x="131" y="42" width="9" height="13" rx="3" fill="#B87400"/>
+
+  <!-- Tail lights -->
+  <rect x="12"  y="226" width="20" height="14" rx="3" fill="#A13E3D" opacity="0.90"/>
+  <rect x="108" y="226" width="20" height="14" rx="3" fill="#A13E3D" opacity="0.90"/>
+
+  <!-- Bumper strip -->
+  <rect x="8" y="240" width="124" height="12" rx="8" fill="#1C1C1C" opacity="0.85"/>
+
+  <!-- Center latch -->
+  <circle cx="70" cy="249" r="3.5" fill="#1C1C1C" opacity="0.50"/>
+
+  <!-- Performance dots -->
+  ${dots}
+</svg>`;
+}
+
+// ─── STRATEGIC TAB ────────────────────────────────────────
+function buildStrategicTab() {
+  const grid = document.getElementById('bus-grid');
+  if (!grid || grid.dataset.built) return;
+
+  const busMetrics = [
+    {
+      label:     'Graduation Rate',
+      pct:       82,
+      green:     8,   // 82% → 8 in 10
+      caption:   '8 in 10 students graduate on time',
+      benchmark: 'WA State: 83.6%',
+      above:     false,
+      source:    '4-Year ACGR · OSPI 2022–23',
+    },
+    {
+      label:     'ELA / Reading',
+      pct:       72,
+      green:     7,   // 72% → 7 in 10
+      caption:   '7 in 10 students meet ELA standard',
+      benchmark: 'WA State: 58% ↑ +14 pts above state',
+      above:     true,
+      source:    'SBAC Grade 10 · OSPI 2022–23',
+    },
+    {
+      label:     'Mathematics',
+      pct:       24,
+      green:     2,   // 24% → 2 in 10
+      caption:   '2 in 10 students meet Math standard',
+      benchmark: 'WA State: 31%',
+      above:     false,
+      source:    'SBAC Grade 10 · OSPI 2022–23',
+    },
+  ];
+
+  grid.innerHTML = busMetrics.map((d, i) => `
+    <div class="bus-card animate-in" style="animation-delay:${i * 0.14}s">
+      <div class="bus-svg-wrap">${buildBusSVG(d.green, i)}</div>
+      <div class="bus-info">
+        <div class="bus-label">${d.label}</div>
+        <div class="bus-pct ${d.green <= 3 ? 'pct-warn' : ''}">${d.pct}%</div>
+        <div class="bus-caption">${d.caption}</div>
+        <div class="bus-benchmark ${d.above ? 'bench-above' : 'bench-below'}">${d.benchmark}</div>
+        <div class="bus-source">${d.source}</div>
+      </div>
+    </div>`).join('');
+
+  grid.dataset.built = '1';
 }
 
 // ─── DOWNLOAD CHART AS PNG ───────────────────────────────

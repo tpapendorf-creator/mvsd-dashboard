@@ -73,6 +73,9 @@
     <button class="tab-btn" data-tab="staffing" role="tab">
       <span class="tab-num">04</span><span class="tab-label">Staffing</span>
     </button>
+    <button class="tab-btn" data-tab="strategic" role="tab">
+      <span class="tab-num">05</span><span class="tab-label">Strategic Plan</span>
+    </button>
     <div class="tab-indicator"></div>
   </nav>
 
@@ -337,6 +340,26 @@
         </div>
         <p class="card-footnote">Source: NCES CCD 2023–24 · WA state avg from Ballotpedia / NCES</p>
       </div>
+    </div>
+
+    <!-- ── TAB 5: STRATEGIC PLAN ──────────────────────────── -->
+    <div class="tab-panel" id="tab-strategic" role="tabpanel">
+
+      <div class="strat-intro animate-in">
+        <div>
+          <h2 class="strat-title">High School Student Performance</h2>
+          <p class="strat-sub">Mount Vernon School District · 2022–23 · Grades 10 &amp; 12</p>
+        </div>
+        <div class="bus-legend">
+          <span class="bus-leg-item"><span class="bus-leg-dot dot-green"></span>Meeting Standard</span>
+          <span class="bus-leg-item"><span class="bus-leg-dot dot-white"></span>Not Yet Meeting Standard</span>
+          <span class="bus-leg-note">Each circle = 10% of students</span>
+        </div>
+      </div>
+
+      <!-- Bus pictograph grid — built dynamically by app.js -->
+      <div class="bus-grid" id="bus-grid"></div>
+
     </div>
 
   </main>
