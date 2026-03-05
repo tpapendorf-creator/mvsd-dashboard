@@ -688,14 +688,14 @@ body {
 .bus-windshields {
   display: flex;
   justify-content: space-between;
-  padding: 0 6px 6px;
-  gap: 8px;
+  padding: 0 8px 5px;
+  gap: 6px;
 }
 .bus-ws {
   flex: 1;
-  height: 30px;
+  height: 20px;
   background: #1C1C1C;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 .bus-mid {
   display: flex;
@@ -707,11 +707,11 @@ body {
   flex-direction: column;
   justify-content: space-around;
   padding: 4px 0;
-  width: 14px;
+  width: 10px;
 }
 .bus-win {
-  width: 14px;
-  height: 20px;
+  width: 10px;
+  height: 13px;
   background: rgba(28,28,28,0.78);
   border-radius: 2px;
 }
@@ -725,7 +725,7 @@ body {
 }
 .bus-dot-row {
   display: flex;
-  gap: 8px;
+  gap: 14px;
 }
 .bus-dot {
   width: 22px;
