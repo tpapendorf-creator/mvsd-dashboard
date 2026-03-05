@@ -642,8 +642,124 @@ body {
   border-color: rgba(0, 133, 68, 0.3);
   box-shadow: 0 4px 32px rgba(0, 133, 68, 0.07);
 }
-.bus-svg-wrap { width: 140px; flex-shrink: 0; }
-.bus-svg-wrap svg { width: 100%; height: auto; display: block; }
+/* ─── HTML/CSS BUS COMPONENT ──────────────────────── */
+.bus-wrap {
+  position: relative;
+  width: 144px;
+  flex-shrink: 0;
+}
+.bus-mirror {
+  position: absolute;
+  top: 50px;
+  width: 11px;
+  height: 14px;
+  background: #B87400;
+  border-radius: 3px;
+  z-index: 1;
+}
+.bus-mirror-l { left: 0; }
+.bus-mirror-r { right: 0; }
+.bus-body {
+  width: 120px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(90deg, #C47800 0%, #FFB500 14%, #FFC835 50%, #FFB500 86%, #C47800 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 4px 6px 18px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
+}
+.bus-roof-cap {
+  height: 10px;
+  background: rgba(120,60,0,0.55);
+  flex-shrink: 0;
+}
+.bus-vents {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 12px 2px;
+}
+.bus-vent {
+  width: 22px;
+  height: 4px;
+  background: rgba(80,40,0,0.55);
+  border-radius: 1.5px;
+}
+.bus-windshields {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 6px 6px;
+  gap: 8px;
+}
+.bus-ws {
+  flex: 1;
+  height: 30px;
+  background: #1C1C1C;
+  border-radius: 4px;
+}
+.bus-mid {
+  display: flex;
+  flex: 1;
+  min-height: 145px;
+}
+.bus-wins-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 4px 0;
+  width: 14px;
+}
+.bus-win {
+  width: 14px;
+  height: 20px;
+  background: rgba(28,28,28,0.78);
+  border-radius: 2px;
+}
+.bus-dots-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px 4px;
+}
+.bus-dot-row {
+  display: flex;
+  gap: 8px;
+}
+.bus-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+.bus-dot.green { background: #008544; }
+.bus-dot.white { background: #F0F0F0; border: 1px solid rgba(0,0,0,0.1); }
+.bus-lights-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 6px;
+}
+.bus-light {
+  width: 20px;
+  height: 12px;
+  background: rgba(161,62,61,0.90);
+  border-radius: 3px;
+}
+.bus-bumper {
+  height: 12px;
+  background: rgba(28,28,28,0.85);
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.bus-latch {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(200,200,200,0.4);
+}
 .bus-info { width: 100%; text-align: center; }
 .bus-label {
   font-size: 0.64rem;
