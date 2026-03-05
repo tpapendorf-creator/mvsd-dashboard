@@ -692,7 +692,7 @@ function buildStrategicTab() {
         <div class="strat-sec-badge">01</div>
         <div>
           <div class="strat-sec-title">Attendance</div>
-          <div class="strat-sec-desc">9 in 10 students will attend school 90% of the time · <strong>Target: 90% by 2031</strong></div>
+          <div class="strat-sec-desc">9 in 10 students will attend school 90% of the time · <strong>Target: 90% by 2031</strong> · Source: Homeroom</div>
         </div>
       </div>
       <div class="strat-sec-body">
@@ -721,7 +721,7 @@ function buildStrategicTab() {
         <div class="strat-sec-badge">02</div>
         <div>
           <div class="strat-sec-title">Early Literacy (IRLA)</div>
-          <div class="strat-sec-desc">9 in 10 students entering 6th grade below grade level will demonstrate high growth in literacy · <strong>Target: 90% by 2031</strong></div>
+          <div class="strat-sec-desc">9 in 10 students will be at and above proficiency in reading at the end of each grade level · <strong>Target: 90% by 2031</strong> · Source: SchoolPace (ARC)</div>
         </div>
       </div>
       <div class="strat-sec-body">
@@ -743,15 +743,83 @@ function buildStrategicTab() {
           </div>
         </div>
       </div>
+
+      <!-- IRLA Cohort 3-year tracking -->
+      <div class="strat-subsec">
+        <div class="strat-subsec-label">3-YEAR COHORT GROWTH · PROFICIENT · AT RISK · EMERGENCY</div>
+        <div class="strat-cohort-grid">
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">Class of 2033 · 3rd → 5th Grade · 341 students</div>
+            <div class="chart-wrap" style="height:160px"><canvas id="strat-cohort-2033"></canvas></div>
+          </div>
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">Class of 2034 · 2nd → 4th Grade · 359 students</div>
+            <div class="chart-wrap" style="height:160px"><canvas id="strat-cohort-2034"></canvas></div>
+          </div>
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">Class of 2035 · 1st → 3rd Grade · 337 students</div>
+            <div class="chart-wrap" style="height:160px"><canvas id="strat-cohort-2035"></canvas></div>
+          </div>
+        </div>
+        <div class="strat-cohort-legend">
+          <span class="strat-cohort-leg"><span class="strat-cohort-dot" style="background:#008544"></span>Proficient</span>
+          <span class="strat-cohort-leg"><span class="strat-cohort-dot" style="background:#f59e0b"></span>At Risk</span>
+          <span class="strat-cohort-leg"><span class="strat-cohort-dot" style="background:#ef4444"></span>Emergency</span>
+        </div>
+      </div>
+
+      <!-- Grade 6 Literacy Growth sub-section -->
+      <div class="strat-subsec">
+        <div class="strat-subsec-label">GRADE 6 LITERACY GROWTH · STUDENTS ENTERING BELOW GRADE LEVEL · SOURCE: STAR ASSESSMENTS</div>
+        <div class="strat-sec-body">
+          <div class="strat-bus-col">
+            ${buildBusHTML(4)}
+            <div class="strat-bus-pct">38%</div>
+            <div class="strat-bus-sub">Demonstrated high growth<br>271 students · 2025–26</div>
+            ${busLegend('High growth', 'Low growth')}
+          </div>
+          <div class="strat-charts-col">
+            <div class="strat-chart-block">
+              <div class="strat-chart-lbl">High Growth Rate by School</div>
+              <div class="chart-wrap" style="height:130px"><canvas id="strat-grade6-growth"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MIDDLE SCHOOL MASTERY ──────────────────────── -->
+    <div class="strat-section card animate-in">
+      <div class="strat-sec-head">
+        <div class="strat-sec-badge">03</div>
+        <div>
+          <div class="strat-sec-title">Middle School Mastery</div>
+          <div class="strat-sec-desc">9 in 10 middle school students will demonstrate mastery of learning standards in all classes · <strong>Target: 90% by 2031</strong> · Source: Star Assessments</div>
+        </div>
+      </div>
+      <div class="strat-sec-body">
+        <div class="strat-bus-col">
+          ${buildBusHTML(5)}
+          <div class="strat-bus-pct">48%</div>
+          <div class="strat-bus-sub">At/Above Benchmark<br>Star Math · Winter 25–26</div>
+          ${busLegend('At/Above benchmark', 'Watch / Intervention')}
+        </div>
+        <div class="strat-charts-col">
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">Star Math Benchmark Distribution — Grades 6–8 · Districtwide</div>
+            <div class="chart-wrap" style="height:200px"><canvas id="strat-ms-math"></canvas></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ── 9TH GRADE ON-TRACK ────────────────────────── -->
     <div class="strat-section card animate-in">
       <div class="strat-sec-head">
-        <div class="strat-sec-badge">03</div>
+        <div class="strat-sec-badge">04</div>
         <div>
           <div class="strat-sec-title">9th Grade On-Track</div>
-          <div class="strat-sec-desc">9 in 10 9th graders will be on track to graduate with 6 credits earned at the end of 9th grade · <strong>Target: 90% by 2031</strong></div>
+          <div class="strat-sec-desc">9 in 10 9th graders will be on track to graduate with 6 credits earned at the end of 9th grade · <strong>Target: 90% by 2031</strong> · Source: Homeroom</div>
         </div>
       </div>
       <div class="strat-sec-body">
@@ -783,7 +851,7 @@ function buildStrategicTab() {
 
       <div class="strat-pilot-card card">
         <div class="strat-sec-head" style="margin-bottom:18px">
-          <div class="strat-sec-badge">04</div>
+          <div class="strat-sec-badge">05</div>
           <div>
             <div class="strat-sec-title">Elementary Math Curriculum Pilot</div>
             <div class="strat-sec-desc">6 schools · Grades K–5 · Pilot Window 1: Nov 10 – Feb 6 · Window 2: Feb 10 – Apr 24</div>
@@ -821,6 +889,9 @@ function buildStrategicTab() {
   initStratAttendProg();
   initStratIrlaTrend();
   initStratIrlaGroups();
+  initStratIrlaCohorts();
+  initStratGrade6Growth();
+  initStratMSMath();
   initStratNinthGroups();
   initStratPilotPie();
 
@@ -931,8 +1002,8 @@ function initStratIrlaGroups() {
 function initStratNinthGroups() {
   stratHBar(
     'strat-ninth-groups',
-    ['All Students', 'Students w/ Disabilities', 'Hispanic / Latino', 'TBIP'],
-    [80, 78.3, 76, 75]
+    ['All Students', 'Hispanic / Latino', 'Students w/ Disabilities', 'TBIP'],
+    [79.9, 79.5, 78.7, 75.0]
   );
 }
 
@@ -978,6 +1049,115 @@ function initStratPilotPie() {
       </div>`
     ).join('');
   }
+}
+
+// ─── IRLA COHORT STACKED BAR CHARTS ──────────────────────
+function initStratIrlaCohorts() {
+  const cohorts = [
+    {
+      id: 'strat-cohort-2033',
+      labels: [['3rd Gr', '23/24'], ['4th Gr', '24/25'], ['5th Gr', '25/26']],
+      proficient: [145, 164, 191],
+      atRisk:     [38,  63,  64 ],
+      emergency:  [158, 140, 112],
+    },
+    {
+      id: 'strat-cohort-2034',
+      labels: [['2nd Gr', '23/24'], ['3rd Gr', '24/25'], ['4th Gr', '25/26']],
+      proficient: [91,  198, 230],
+      atRisk:     [133, 55,  73 ],
+      emergency:  [135, 136, 86 ],
+    },
+    {
+      id: 'strat-cohort-2035',
+      labels: [['1st Gr', '23/24'], ['2nd Gr', '24/25'], ['3rd Gr', '25/26']],
+      proficient: [171, 149, 228],
+      atRisk:     [39,  104, 35 ],
+      emergency:  [127, 123, 113],
+    },
+  ];
+  cohorts.forEach(c => {
+    const ctx = document.getElementById(c.id);
+    if (!ctx) return;
+    charts[c.id] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: c.labels,
+        datasets: [
+          { label: 'Proficient', data: c.proficient, backgroundColor: C.mvsd,    stack: 's', borderRadius: 0 },
+          { label: 'At Risk',    data: c.atRisk,     backgroundColor: '#f59e0b', stack: 's', borderRadius: 0 },
+          { label: 'Emergency',  data: c.emergency,  backgroundColor: '#ef4444', stack: 's', borderRadius: 0 },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { mode: 'index', intersect: false },
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: C.text, font: { size: 9 } } },
+          y: { stacked: true, grid: { color: C.grid }, ticks: { color: C.text, font: { size: 9 } } },
+        },
+      },
+      plugins: [glowPlugin],
+    });
+  });
+}
+
+// ─── GRADE 6 HIGH GROWTH CHART ───────────────────────────
+function initStratGrade6Growth() {
+  stratHBar(
+    'strat-grade6-growth',
+    ['Skagit Academy', 'Mt Baker Middle', 'District Avg', 'LaVenture Middle'],
+    [67, 47, 38, 30],
+    [C.mvsdBrt, C.mvsd, '#3b82f6', '#f59e0b']
+  );
+}
+
+// ─── MIDDLE SCHOOL STAR MATH STACKED BAR ─────────────────
+function initStratMSMath() {
+  const ctx = document.getElementById('strat-ms-math');
+  if (!ctx) return;
+  charts['strat-ms-math'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Winter 23–24', 'Winter 24–25', 'Winter 25–26'],
+      datasets: [
+        { label: 'At/Above Benchmark', data: [39.9, 45.5, 48.0], backgroundColor: C.mvsd,    stack: 's' },
+        { label: 'On Watch',           data: [15.2, 17.5, 15.8], backgroundColor: '#3b82f6', stack: 's' },
+        { label: 'Intervention',       data: [22.0, 21.5, 19.7], backgroundColor: '#f59e0b', stack: 's' },
+        { label: 'Urgent Intervention',data: [22.9, 15.5, 16.5], backgroundColor: '#ef4444', stack: 's' },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: { color: C.text, font: { size: 10 }, boxWidth: 12, padding: 10 },
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}%` },
+        },
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { color: C.text, font: { size: 11 } } },
+        y: {
+          stacked: true,
+          min: 0, max: 100,
+          grid: { color: C.grid },
+          ticks: { color: C.text, font: { size: 10 }, callback: v => v + '%' },
+        },
+      },
+    },
+    plugins: [glowPlugin],
+  });
 }
 
 // ─── DOWNLOAD CHART AS PNG ───────────────────────────────
