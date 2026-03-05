@@ -610,54 +610,374 @@ function buildBusHTML(greenCount) {
   </div>`;
 }
 
+// ─── TARGET LINE PLUGINS ──────────────────────────────────
+// Vertical dashed line for horizontal bar charts (indexAxis:'y')
+function makeVTargetLine(value, label) {
+  return {
+    id: 'vTargetLine',
+    afterDraw(chart) {
+      const { ctx, chartArea, scales } = chart;
+      const x = scales.x.getPixelForValue(value);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.top);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255,255,255,0.36)';
+      ctx.font = '9px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(label || `${value}%`, x, chartArea.top - 3);
+      ctx.restore();
+    },
+  };
+}
+
 // ─── STRATEGIC TAB ────────────────────────────────────────
 function buildStrategicTab() {
-  const grid = document.getElementById('bus-grid');
-  if (!grid || grid.dataset.built) return;
+  const container = document.getElementById('strat-content');
+  if (!container || container.dataset.built) return;
 
-  const busMetrics = [
-    {
-      label:     'Graduation Rate',
-      pct:       82,
-      green:     8,   // 82% → 8 in 10
-      caption:   '8 in 10 students graduate on time',
-      benchmark: 'WA State: 83.6%',
-      above:     false,
-      source:    '4-Year ACGR · OSPI 2022–23',
-    },
-    {
-      label:     'ELA / Reading',
-      pct:       72,
-      green:     7,   // 72% → 7 in 10
-      caption:   '7 in 10 students meet ELA standard',
-      benchmark: 'WA State: 58% ↑ +14 pts above state',
-      above:     true,
-      source:    'SBAC Grade 10 · OSPI 2022–23',
-    },
-    {
-      label:     'Mathematics',
-      pct:       24,
-      green:     2,   // 24% → 2 in 10
-      caption:   '2 in 10 students meet Math standard',
-      benchmark: 'WA State: 31%',
-      above:     false,
-      source:    'SBAC Grade 10 · OSPI 2022–23',
-    },
+  const goals = [
+    { area: 'Attendance',               target: '90%'  },
+    { area: 'TTK–5 Proficiency',        target: '90%'  },
+    { area: 'Literacy Growth (Gr. 6)',  target: '90%'  },
+    { area: 'Middle School Mastery',    target: '90%'  },
+    { area: '9th Grade On-Track',       target: '90%'  },
+    { area: 'FAFSA / WASFA',            target: '100%' },
+    { area: 'Belonging & Engagement',   target: '100%' },
   ];
 
-  grid.innerHTML = busMetrics.map((d, i) => `
-    <div class="bus-card animate-in" style="animation-delay:${i * 0.14}s">
-      ${buildBusHTML(d.green)}
-      <div class="bus-info">
-        <div class="bus-label">${d.label}</div>
-        <div class="bus-pct ${d.green <= 3 ? 'pct-warn' : ''}">${d.pct}%</div>
-        <div class="bus-caption">${d.caption}</div>
-        <div class="bus-benchmark ${d.above ? 'bench-above' : 'bench-below'}">${d.benchmark}</div>
-        <div class="bus-source">${d.source}</div>
-      </div>
+  const goalChips = goals.map(g => `
+    <div class="strat-goal-chip ${g.target === '100%' ? 'goal-chip-gold' : ''}">
+      <div class="strat-goal-target">${g.target}</div>
+      <div class="strat-goal-area">${g.area}</div>
     </div>`).join('');
 
-  grid.dataset.built = '1';
+  const busLegend = (greenLabel, whiteLabel) => `
+    <div class="strat-bus-legend">
+      <span class="strat-leg-item"><span class="strat-leg-dot dot-green"></span>${greenLabel}</span>
+      <span class="strat-leg-item"><span class="strat-leg-dot dot-white"></span>${whiteLabel}</span>
+      <span class="strat-leg-note">Each dot = 10% of students</span>
+    </div>`;
+
+  container.innerHTML = `
+
+    <!-- ── PLAN HEADER ───────────────────────────────── -->
+    <div class="strat-plan-header card animate-in">
+      <div class="strat-plan-badge">6-YEAR STRATEGIC PLAN · ADOPTED 2025 · TARGET 2031</div>
+      <h2 class="strat-plan-title">Mount Vernon School District Strategic Initiatives</h2>
+      <div class="strat-progress-row">
+        <span class="strat-prog-lbl">Start</span>
+        <div class="strat-progbar-wrap">
+          <div class="strat-progbar" style="width:8.33%"></div>
+          <div class="strat-progbar-label">Year 0.5 of 6 · Presented Feb 18, 2026</div>
+        </div>
+        <span class="strat-prog-lbl">2031</span>
+      </div>
+    </div>
+
+    <!-- ── GOALS OVERVIEW ───────────────────────────── -->
+    <div class="strat-goals-wrap animate-in">
+      <div class="strat-section-label">DISTRICT TARGETS BY 2031 — "9 IN 10" STANDARD</div>
+      <div class="strat-goals-grid">${goalChips}</div>
+    </div>
+
+    <!-- ── ATTENDANCE ───────────────────────────────── -->
+    <div class="strat-section card animate-in">
+      <div class="strat-sec-head">
+        <div class="strat-sec-badge">01</div>
+        <div>
+          <div class="strat-sec-title">Attendance</div>
+          <div class="strat-sec-desc">9 in 10 students will attend school 90% of the time · <strong>Target: 90% by 2031</strong></div>
+        </div>
+      </div>
+      <div class="strat-sec-body">
+        <div class="strat-bus-col">
+          ${buildBusHTML(7)}
+          <div class="strat-bus-pct">65%</div>
+          <div class="strat-bus-sub">Districtwide · All Students<br>2025–26</div>
+          ${busLegend('Attending ≥90%', 'Below threshold')}
+        </div>
+        <div class="strat-charts-col">
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">By Student Group · Districtwide</div>
+            <div class="chart-wrap" style="height:150px"><canvas id="strat-attend-groups"></canvas></div>
+          </div>
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">By Program / Service Type · Districtwide</div>
+            <div class="chart-wrap" style="height:150px"><canvas id="strat-attend-prog"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EARLY LITERACY ───────────────────────────── -->
+    <div class="strat-section card animate-in">
+      <div class="strat-sec-head">
+        <div class="strat-sec-badge">02</div>
+        <div>
+          <div class="strat-sec-title">Early Literacy (IRLA)</div>
+          <div class="strat-sec-desc">9 in 10 students entering 6th grade below grade level will demonstrate high growth in literacy · <strong>Target: 90% by 2031</strong></div>
+        </div>
+      </div>
+      <div class="strat-sec-body">
+        <div class="strat-bus-col">
+          ${buildBusHTML(5)}
+          <div class="strat-bus-pct">52%</div>
+          <div class="strat-bus-sub">At/Above Proficiency<br>Jan 2026</div>
+          <div class="strat-bus-delta">↑ +27.7 pts since Oct 2023</div>
+          ${busLegend('At/Above grade level', 'Below grade level')}
+        </div>
+        <div class="strat-charts-col">
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">IRLA Proficiency Growth — All Students</div>
+            <div class="chart-wrap" style="height:130px"><canvas id="strat-irla-trend"></canvas></div>
+          </div>
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">Current Proficiency by Group · Jan 2026</div>
+            <div class="chart-wrap" style="height:130px"><canvas id="strat-irla-groups"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 9TH GRADE ON-TRACK ────────────────────────── -->
+    <div class="strat-section card animate-in">
+      <div class="strat-sec-head">
+        <div class="strat-sec-badge">03</div>
+        <div>
+          <div class="strat-sec-title">9th Grade On-Track</div>
+          <div class="strat-sec-desc">9 in 10 9th graders will be on track to graduate with 6 credits earned at the end of 9th grade · <strong>Target: 90% by 2031</strong></div>
+        </div>
+      </div>
+      <div class="strat-sec-body">
+        <div class="strat-bus-col">
+          ${buildBusHTML(8)}
+          <div class="strat-bus-pct">80%</div>
+          <div class="strat-bus-sub">With 3+ credits after<br>Semester 1 · 2025–26</div>
+          ${busLegend('On track', 'Not yet on track')}
+        </div>
+        <div class="strat-charts-col">
+          <div class="strat-chart-block">
+            <div class="strat-chart-lbl">On-Track Rate by Student Group · Semester 1 2025–26</div>
+            <div class="chart-wrap" style="height:155px"><canvas id="strat-ninth-groups"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HIGHLIGHTS ROW ────────────────────────────── -->
+    <div class="strat-highlights animate-in">
+
+      <div class="strat-hl-card card">
+        <div class="strat-hl-icon">★</div>
+        <div class="strat-hl-big">69</div>
+        <div class="strat-hl-label">Seal of Biliteracy</div>
+        <div class="strat-hl-sub">Graduates · Class of 2025</div>
+        <div class="strat-hl-desc">Students who demonstrated proficiency in English and at least one additional language upon graduation</div>
+      </div>
+
+      <div class="strat-pilot-card card">
+        <div class="strat-sec-head" style="margin-bottom:18px">
+          <div class="strat-sec-badge">04</div>
+          <div>
+            <div class="strat-sec-title">Elementary Math Curriculum Pilot</div>
+            <div class="strat-sec-desc">6 schools · Grades K–5 · Pilot Window 1: Nov 10 – Feb 6 · Window 2: Feb 10 – Apr 24</div>
+          </div>
+        </div>
+        <div class="strat-pilot-body">
+          <div class="strat-pilot-pie-col">
+            <div class="strat-chart-lbl">Pilot Team (58 members)</div>
+            <div style="width:160px;height:160px;flex-shrink:0"><canvas id="strat-pilot-pie"></canvas></div>
+            <div id="strat-pilot-legend" class="strat-pilot-legend"></div>
+          </div>
+          <div class="strat-pilot-pd-col">
+            <div class="strat-pd-heading">PROFESSIONAL DEVELOPMENT</div>
+            <div class="strat-pd-item">
+              <span class="strat-pd-date">Oct 2024</span>
+              <span class="strat-pd-text">Equity in Elementary Math Keynote — Rolanda Baldwin (UnboundEd)</span>
+            </div>
+            <div class="strat-pd-item">
+              <span class="strat-pd-date">Oct 2025</span>
+              <span class="strat-pd-text">Figuring Out Fluency in Math — Dr. Jennifer Bay Williams</span>
+            </div>
+            <div class="strat-pd-item">
+              <span class="strat-pd-date">Oct 2025</span>
+              <span class="strat-pd-text">Multilingual Mindsets and Practices in Mathematics — WCEPS Coaches</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  // Initialize all charts after HTML is in DOM
+  initStratAttendGroups();
+  initStratAttendProg();
+  initStratIrlaTrend();
+  initStratIrlaGroups();
+  initStratNinthGroups();
+  initStratPilotPie();
+
+  container.dataset.built = '1';
+}
+
+// ─── STRATEGIC CHART HELPERS ──────────────────────────────
+function stratHBar(canvasId, labels, data, colors) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  charts[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors || data.map(() => C.mvsd),
+        borderRadius: 3,
+        barThickness: 14,
+      }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw}%` } },
+      },
+      scales: {
+        x: {
+          min: 0, max: 100,
+          grid: { color: C.grid },
+          ticks: { color: C.text, font: { size: 10 }, callback: v => v + '%' },
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: C.text, font: { size: 10 } },
+        },
+      },
+    },
+    plugins: [glowPlugin, makeVTargetLine(90, 'Goal: 90%')],
+  });
+}
+
+function initStratAttendGroups() {
+  stratHBar(
+    'strat-attend-groups',
+    ['All Students', 'TBIP', 'Students w/ Disabilities', 'Hispanic / Latino'],
+    [65, 64, 62, 56]
+  );
+}
+
+function initStratAttendProg() {
+  stratHBar(
+    'strat-attend-prog',
+    ['Gifted', 'Bilingual', 'Special Education', 'Free / Reduced Lunch', 'Homeless'],
+    [77, 64, 62, 61, 53],
+    ['#3b82f6', C.mvsd, C.mvsd, C.mvsd, '#f59e0b']
+  );
+}
+
+function initStratIrlaTrend() {
+  const ctx = document.getElementById('strat-irla-trend');
+  if (!ctx) return;
+  charts['strat-irla-trend'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [['Oct 2023', '(Baseline)'], ['Jan 2026', '(Current)'], ['2031', '(Target)']],
+      datasets: [{
+        data: [24.7, 52.4, 90],
+        backgroundColor: ['#f59e0b', C.mvsd, 'rgba(0,133,68,0.22)'],
+        borderColor:     ['transparent', 'transparent', C.mvsd],
+        borderWidth:     [0, 0, 2],
+        borderRadius: 4,
+        barThickness: 44,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw}%` } },
+      },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          grid: { color: C.grid },
+          ticks: { color: C.text, font: { size: 10 }, callback: v => v + '%' },
+        },
+        x: { grid: { display: false }, ticks: { color: C.text, font: { size: 10 } } },
+      },
+    },
+    plugins: [glowPlugin],
+  });
+}
+
+function initStratIrlaGroups() {
+  stratHBar(
+    'strat-irla-groups',
+    ['Overall', 'Hispanic / Latino', 'TBIP', 'Students w/ Disabilities'],
+    [52.4, 44, 34, 31],
+    [C.mvsdBrt, C.mvsd, C.mvsd, C.mvsd]
+  );
+}
+
+function initStratNinthGroups() {
+  stratHBar(
+    'strat-ninth-groups',
+    ['All Students', 'Students w/ Disabilities', 'Hispanic / Latino', 'TBIP'],
+    [80, 78.3, 76, 75]
+  );
+}
+
+function initStratPilotPie() {
+  const ctx = document.getElementById('strat-pilot-pie');
+  if (!ctx) return;
+  const data = [
+    { label: 'Classroom Teachers', count: 22, color: C.mvsd },
+    { label: 'Math Specialists',   count: 4,  color: '#3b82f6' },
+    { label: 'Inst. Coaches',      count: 3,  color: '#8b5cf6' },
+    { label: 'Resource Room',      count: 3,  color: '#06b6d4' },
+    { label: 'Multilingual Spec.', count: 2,  color: '#f59e0b' },
+    { label: 'Admin',              count: 2,  color: '#6b7280' },
+  ];
+  charts['strat-pilot-pie'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: data.map(d => d.label),
+      datasets: [{
+        data:            data.map(d => d.count),
+        backgroundColor: data.map(d => d.color),
+        borderWidth: 2,
+        borderColor: '#0c1410',
+        hoverOffset: 6,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw}` } },
+      },
+    },
+  });
+  const legend = document.getElementById('strat-pilot-legend');
+  if (legend) {
+    legend.innerHTML = data.map(d =>
+      `<div class="strat-pilot-leg-row">
+        <span class="strat-pilot-leg-dot" style="background:${d.color}"></span>
+        <span>${d.label} <span class="strat-pilot-leg-n">(${d.count})</span></span>
+      </div>`
+    ).join('');
+  }
 }
 
 // ─── DOWNLOAD CHART AS PNG ───────────────────────────────
