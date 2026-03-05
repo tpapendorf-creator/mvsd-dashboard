@@ -604,69 +604,122 @@ function downloadChart(chartKey, filename) {
 function exportCSV() {
   const D    = DATA;
   const rows = [];
+  const hr   = () => rows.push(['════════════════════════════════════════════════════════════════════']);
 
+  // Title block
   rows.push(['MVSD #320 — District Performance Dashboard']);
-  rows.push(['Generated', new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })]);
-  rows.push([]);
+  rows.push(['Mount Vernon School District', 'Skagit County, Washington State']);
+  rows.push(['Generated:', new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })]);
+  rows.push(['Data years:', '2022-23 and 2023-24 school years']);
+  rows.push(['']);
 
-  rows.push(['KEY METRICS']);
-  rows.push(['Metric', 'MVSD #320', 'WA State', 'National']);
-  rows.push(['Student Enrollment (2023–24)', D.staffing.totalStudents, '', '']);
-  rows.push(['Number of Schools', D.staffing.totalSchools, '', '']);
-  rows.push(['FTE Teachers (2023–24)', D.staffing.fteTeachers, '', '']);
-  rows.push(['Student–Teacher Ratio', D.staffing.studentTeacherRatio.mvsd + ':1', D.staffing.studentTeacherRatio.wa + ':1', D.staffing.studentTeacherRatio.nat + ':1']);
-  rows.push(['Per-Pupil Spending (2022–23)', '$' + D.spending.perPupil.mvsd.toLocaleString(), '$' + D.spending.perPupil.wa.toLocaleString(), '$' + D.spending.perPupil.nat.toLocaleString()]);
-  rows.push(['FRPL Eligibility', D.frpl.mvsd + '%', '~' + D.frpl.wa + '%', '~' + D.frpl.nat + '%']);
-  rows.push([]);
+  // ── Key Metrics Summary ───────────────────────────────
+  hr();
+  rows.push(['SECTION 1: KEY METRICS SUMMARY']);
+  hr();
+  rows.push(['Metric', 'MVSD #320', 'WA State', 'National', 'Notes']);
+  rows.push(['']);
+  rows.push(['ENROLLMENT & SCHOOLS (2023-24)']);
+  rows.push(['Total Students Enrolled',  D.staffing.totalStudents, '', '', 'Source: NCES CCD']);
+  rows.push(['Number of Schools',         D.staffing.totalSchools,  '', '', 'Source: NCES CCD']);
+  rows.push(['FTE Classroom Teachers',    D.staffing.fteTeachers,   '', '', 'Full-time equivalent']);
+  rows.push(['']);
+  rows.push(['STUDENT-TEACHER RATIO']);
+  rows.push(['Students per Teacher', D.staffing.studentTeacherRatio.mvsd + ':1', D.staffing.studentTeacherRatio.wa + ':1', D.staffing.studentTeacherRatio.nat + ':1', 'Lower = better']);
+  rows.push(['']);
+  rows.push(['FUNDING (2022-23)']);
+  rows.push(['Per-Pupil Expenditure',   '$' + D.spending.perPupil.mvsd.toLocaleString(), '$' + D.spending.perPupil.wa.toLocaleString(), '$' + D.spending.perPupil.nat.toLocaleString(), 'Annual current spending per student']);
+  rows.push(['Total District Revenue',  '$132M', '', '', 'All revenue sources']);
+  rows.push(['Total District Spending',  '$130M', '', '', 'Current expenditures']);
+  rows.push(['']);
+  rows.push(['DEMOGRAPHICS']);
+  rows.push(['FRPL Eligibility',         D.frpl.mvsd + '%', '~' + D.frpl.wa + '%', '~' + D.frpl.nat + '%', 'Free & Reduced-Price Lunch (economic indicator)']);
+  rows.push(['Hispanic/Latino Students', '57%',  '24%',  '28%',  'MVSD is significantly above WA state average']);
+  rows.push(['']);
+  rows.push(['GRADUATION RATE (2022-23)']);
+  rows.push(['4-Year ACGR',             '82%',   '83.6%', '87.4%', 'Adjusted Cohort Graduation Rate (nationally comparable)']);
+  rows.push(['']);
 
-  rows.push(['ACADEMIC PROFICIENCY — SBAC (% Meeting or Exceeding Standard)']);
-  rows.push(['Subgroup', 'Year', 'MVSD Math %', 'MVSD ELA %', 'MVSD Science %', 'WA Math %', 'WA ELA %', 'WA Science %', 'Values Estimated?']);
+  // ── Academic Proficiency ──────────────────────────────
+  hr();
+  rows.push(['SECTION 2: ACADEMIC PROFICIENCY — SBAC']);
+  rows.push(['Smarter Balanced Assessment (% of students Meeting or Exceeding Standard)']);
+  rows.push(['NOTE: WA SBAC scores are NOT directly comparable to national NAEP scores']);
+  hr();
+  rows.push(['']);
+  rows.push(['Subgroup', 'Year', 'MVSD Math %', 'MVSD ELA %', 'MVSD Science %', 'WA Math %', 'WA ELA %', 'WA Science %', 'Data Type']);
   for (const [, sg] of Object.entries(D.proficiency.subgroups)) {
+    rows.push(['']);
+    rows.push([`--- ${sg.label.toUpperCase()} ---`]);
     for (const yr of D.proficiency.years) {
       if (!sg.mvsd[yr]) continue;
-      const mv = sg.mvsd[yr];
-      const wa = sg.wa[yr] || [];
-      rows.push([sg.label, yr, mv[0], mv[1], mv[2] ?? 'N/A', wa[0] ?? '', wa[1] ?? '', wa[2] ?? '', sg.estimated ? 'Yes' : 'No']);
+      const mv  = sg.mvsd[yr];
+      const wa  = sg.wa[yr] || [];
+      const tag = sg.estimated ? 'Estimated' : 'Confirmed (OSPI)';
+      rows.push([sg.label, yr, mv[0], mv[1], mv[2] ?? 'N/A', wa[0] ?? '', wa[1] ?? '', wa[2] ?? '', tag]);
     }
   }
-  rows.push([]);
+  rows.push(['']);
 
-  rows.push(['GRADE-LEVEL PROFICIENCY — 2022–23']);
-  rows.push(['Level', 'MVSD ELA %', 'MVSD Math %', 'WA ELA % (approx)', 'WA Math % (approx)']);
+  // ── Grade-Level ───────────────────────────────────────
+  hr();
+  rows.push(['SECTION 3: PROFICIENCY BY GRADE LEVEL — 2022-23']);
+  rows.push(['Source: Public School Review 2022-23 | WA state values approximate']);
+  hr();
+  rows.push(['']);
+  rows.push(['School Level', 'MVSD ELA %', 'MVSD Math %', 'WA ELA % (approx)', 'WA Math % (approx)']);
   D.gradeLevel.labels.forEach((lbl, i) => {
-    rows.push([lbl, D.gradeLevel.mvsd.ela[i], D.gradeLevel.mvsd.math[i], D.gradeLevel.wa.ela[i], D.gradeLevel.wa.math[i]]);
+    rows.push([lbl, D.gradeLevel.mvsd.ela[i] + '%', D.gradeLevel.mvsd.math[i] + '%', D.gradeLevel.wa.ela[i] + '%', D.gradeLevel.wa.math[i] + '%']);
   });
-  rows.push([]);
+  rows.push(['']);
 
-  rows.push(['GRADUATION RATES — 4-Year ACGR']);
-  rows.push(['Year', 'MVSD %', 'WA State %', 'National %']);
+  // ── Graduation ────────────────────────────────────────
+  hr();
+  rows.push(['SECTION 4: GRADUATION RATES — 5-YEAR TREND']);
+  rows.push(['4-Year Adjusted Cohort Graduation Rate (ACGR) — nationally comparable']);
+  rows.push(['NOTE: 2019-20 data not shown; statewide testing cancelled due to COVID-19']);
+  hr();
+  rows.push(['']);
+  rows.push(['School Year', 'MVSD %', 'WA State %', 'National %']);
   D.graduation.years.forEach((yr, i) => {
-    rows.push([yr, D.graduation.mvsd[i], D.graduation.wa[i], D.graduation.national[i]]);
+    rows.push([yr, D.graduation.mvsd[i] + '%', D.graduation.wa[i] + '%', D.graduation.national[i] + '%']);
   });
-  rows.push([]);
+  rows.push(['', '', '', '', 'MVSD gained +11 percentage points from 2018-19 to 2022-23']);
+  rows.push(['']);
 
-  rows.push(['DEMOGRAPHICS — Racial & Ethnic Enrollment']);
-  rows.push(['Group', 'MVSD %', 'WA State %', 'National %']);
+  // ── Demographics ──────────────────────────────────────
+  hr();
+  rows.push(['SECTION 5: DEMOGRAPHICS — RACIAL & ETHNIC ENROLLMENT']);
+  rows.push(['Source: NCES CCD 2023-24 | WA and National values approximate']);
+  hr();
+  rows.push(['']);
+  rows.push(['Racial/Ethnic Group', 'MVSD %', 'WA State %', 'National %']);
   D.ethnicity.labels.forEach((lbl, i) => {
-    rows.push([lbl, D.ethnicity.mvsd[i], D.ethnicity.wa[i], D.ethnicity.nat[i]]);
+    rows.push([lbl, D.ethnicity.mvsd[i] + '%', D.ethnicity.wa[i] + '%', D.ethnicity.nat[i] + '%']);
   });
-  rows.push([]);
+  rows.push(['']);
 
-  rows.push(['DATA SOURCES']);
-  rows.push(['WA State Report Card (OSPI)', 'https://washingtonstatereportcard.ospi.k12.wa.us/']);
-  rows.push(['NCES Common Core of Data',    'https://nces.ed.gov/ccd/']);
-  rows.push(['Public School Review',         'https://www.publicschoolreview.com/']);
-  rows.push(['NEA Rankings & Estimates 2024','https://www.nea.org/resource-library/rankings-estimates-state-state-education-data']);
-  rows.push(['NCES Fast Facts: Graduation',  'https://nces.ed.gov/fastfacts/display.asp?id=805']);
+  // ── Sources ───────────────────────────────────────────
+  hr();
+  rows.push(['SECTION 6: DATA SOURCES']);
+  hr();
+  rows.push(['']);
+  rows.push(['Source', 'URL', 'Data Used']);
+  rows.push(['WA State Report Card (OSPI)',   'https://washingtonstatereportcard.ospi.k12.wa.us/', 'SBAC proficiency by district, subgroup, year']);
+  rows.push(['OSPI Graduation Statistics',    'https://ospi.k12.wa.us/',                           '4-year ACGR by district (2022-23)']);
+  rows.push(['NCES Common Core of Data (CCD)','https://nces.ed.gov/ccd/',                          'Enrollment, staffing, school count (2023-24)']);
+  rows.push(['NCES Fast Facts: Graduation',   'https://nces.ed.gov/fastfacts/display.asp?id=805',  'National graduation rate benchmarks']);
+  rows.push(['Public School Review',          'https://www.publicschoolreview.com/',               'Per-pupil spending, grade-level proficiency, FRPL']);
+  rows.push(['NEA Rankings & Estimates 2024', 'https://www.nea.org/resource-library/rankings-estimates-state-state-education-data', 'WA state and national per-pupil spending medians']);
 
-  const csv = rows.map(row =>
-    row.map(cell => {
-      const s = String(cell ?? '');
-      return s.includes(',') || s.includes('"') || s.includes('\n')
-        ? '"' + s.replace(/"/g, '""') + '"'
-        : s;
-    }).join(',')
-  ).join('\n');
+  // Serialize
+  const esc = cell => {
+    const s = String(cell ?? '');
+    return s.includes(',') || s.includes('"') || s.includes('\n')
+      ? '"' + s.replace(/"/g, '""') + '"'
+      : s;
+  };
+  const csv = '\uFEFF' + rows.map(r => r.map(esc).join(',')).join('\r\n');
 
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
