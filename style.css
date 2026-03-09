@@ -253,6 +253,44 @@ body {
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 14px var(--mvsd-glow), 0 -2px 8px var(--mvsd-glow);
 }
+.constellation-launch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 7px 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #00d97a;
+  background: rgba(0, 133, 68, 0.12);
+  border: 1px solid rgba(0, 133, 68, 0.3);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
+  white-space: nowrap;
+  align-self: center;
+  margin-bottom: 6px;
+}
+.constellation-launch:hover {
+  background: rgba(0, 133, 68, 0.22);
+  border-color: rgba(0, 133, 68, 0.55);
+  box-shadow: 0 0 16px rgba(0, 133, 68, 0.25);
+  color: #fff;
+}
+.constellation-launch-icon {
+  font-size: 0.9em;
+  opacity: 0.85;
+  animation: starPulse 2.5s ease-in-out infinite;
+}
+.constellation-launch-arrow {
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+@keyframes starPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; text-shadow: 0 0 8px rgba(0,217,122,0.8); }
+}
 
 /* ─── TAB PANELS ─────────────────────────────────────────── */
 .tab-panels {
