@@ -394,7 +394,6 @@ export function ConstellationCanvas() {
   const vbY = useSpring(0,    SPRING);
   const vbW = useSpring(1000, SPRING);
   const vbH = useSpring(680,  SPRING);
-  // @ts-expect-error MotionValue<string> is valid for SVG viewBox at runtime
   const viewBox = useMotionTemplate`${vbX} ${vbY} ${vbW} ${vbH}`;
 
   const selectedGoal = goals.find(g => g.id === selectedGoalId) ?? null;
@@ -423,7 +422,6 @@ export function ConstellationCanvas() {
   return (
     <div className="w-full h-full relative overflow-hidden">
       <motion.svg
-        // @ts-expect-error MotionValue assigned to SVG attribute
         viewBox={viewBox}
         width="100%" height="100%"
         style={{ display: 'block' }}
