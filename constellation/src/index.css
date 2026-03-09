@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #030712;
+    color: #e2e8f0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  .text-glow-green {
+    text-shadow: 0 0 20px rgba(0, 133, 68, 0.6), 0 0 40px rgba(0, 133, 68, 0.3);
+  }
+
+  .text-glow-gold {
+    text-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 0 40px rgba(245, 158, 11, 0.3);
+  }
+
+  .node-glow {
+    filter: drop-shadow(0 0 10px currentColor);
+  }
+
+  .glass-panel {
+    background: rgba(10, 22, 40, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-panel-dark {
+    background: rgba(3, 7, 18, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* SVG constellation animations */
+.star-twinkle {
+  animation: twinkle var(--duration, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: var(--min-opacity, 0.2); }
+  50% { opacity: var(--max-opacity, 0.9); }
+}
+
+.toa-ring-pulse {
+  animation: ringPulse 8s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.22; }
+}
+
+.center-glow-pulse {
+  animation: centerGlow 3s ease-in-out infinite;
+}
+
+@keyframes centerGlow {
+  0%, 100% { opacity: 0.4; r: 70; }
+  50% { opacity: 0.65; r: 78; }
+}
+
+/* Scrollbar for drawer */
+.drawer-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.drawer-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.drawer-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.drawer-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,0.15);
+  border-radius: 2px;
+}

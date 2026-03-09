@@ -4,6 +4,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
+    "build": "npm --prefix constellation install && npm --prefix constellation run build",
     "start": "node server.js"
   },
   "dependencies": {
