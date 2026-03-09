@@ -1,5 +1,5 @@
 import React from 'react';
-import type { BarChart, StackedBarChart, TimelineChart } from '../data/goals';
+import type { BarChart, StackedBarChart, TimelineChart, ChartDef } from '../data/goals';
 
 // ─── Horizontal / Vertical Bar ────────────────────────────────────────────────
 
@@ -231,8 +231,6 @@ export function TimelineViz({ chart }: { chart: TimelineChart }) {
 }
 
 // ─── Unified dispatcher ───────────────────────────────────────────────────────
-
-import type { ChartDef } from '../data/goals';
 
 export function ChartViz({ chart }: { chart: ChartDef }) {
   switch (chart.type) {
