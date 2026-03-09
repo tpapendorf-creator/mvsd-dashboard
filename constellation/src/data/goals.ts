@@ -316,7 +316,7 @@ export const goals: Goal[] = [
     nodeColor: '#8b5cf6',
     emoji: '🎯',
     description:
-      '9th grade is the most pivotal year in a student's academic trajectory. Students who are on track — earning credits and passing core classes — are dramatically more likely to graduate. MVSD is at 79.9% overall, with a clear imperative to close gaps for our highest-need students.',
+      "9th grade is the most pivotal year in a student's academic trajectory. Students who are on track — earning credits and passing core classes — are dramatically more likely to graduate. MVSD is at 79.9% overall, with a clear imperative to close gaps for our highest-need students.",
     cx: 383, cy: 583,
     currentPct: 79.9, targetPct: 90,
     currentLabel: 'Jan 2026',
@@ -392,7 +392,7 @@ export const goals: Goal[] = [
     nodeColor: '#fb923c',
     emoji: '🎓',
     description:
-      'Graduation is the culmination of our collective work. MVSD's four-year graduation rate has climbed from 74% in 2018–19 to 82% in 2022–23. Closing the remaining gap to our 90% goal means ensuring every student — regardless of background — crosses that stage.',
+      "Graduation is the culmination of our collective work. MVSD's four-year graduation rate has climbed from 74% in 2018–19 to 82% in 2022–23. Closing the remaining gap to our 90% goal means ensuring every student — regardless of background — crosses that stage.",
     cx: 289, cy: 172,
     currentPct: 82, targetPct: 90,
     currentLabel: '2022–23',
