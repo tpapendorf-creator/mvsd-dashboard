@@ -306,51 +306,52 @@ function GoalNode({ goal, index, isSelected, isHovered, isDimmed, onSelect, onHo
   );
 }
 
-// ─── Solar system — orbiting planet ────────────────────────────────────────────
+// ─── Solar system — orbiting planets with drag-to-spin ─────────────────────────
 
-function PlanetOrbit({ planet, starCx, starCy, startFraction, color }: {
-  planet: Planet; starCx: number; starCy: number; startFraction: number; color: string;
+/** Pure visual component – position is driven externally via the group's SVG transform */
+function PlanetBody({ planet, color, groupRef, onPointerDown, onPointerMove, onPointerUp }: {
+  planet: Planet;
+  color: string;
+  groupRef: (el: SVGGElement | null) => void;
+  onPointerDown: (e: React.PointerEvent<SVGGElement>) => void;
+  onPointerMove: (e: React.PointerEvent<SVGGElement>) => void;
+  onPointerUp: (e: React.PointerEvent<SVGGElement>) => void;
 }) {
-  const groupRef = useRef<SVGGElement>(null);
-
-  useEffect(() => {
-    let raf: number;
-    const { period, orbitRadius } = planet;
-    const tick = () => {
-      const t = ((performance.now() / 1000 / period) + startFraction) % 1;
-      const x = starCx + Math.cos(t * 2 * Math.PI) * orbitRadius;
-      const y = starCy + Math.sin(t * 2 * Math.PI) * orbitRadius;
-      groupRef.current?.setAttribute('transform', `translate(${x.toFixed(2)},${y.toFixed(2)})`);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <g ref={groupRef} style={{ pointerEvents: 'none' }}>
+    <g
+      ref={groupRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      style={{ cursor: 'grab' }}
+    >
+      {/* Invisible hit area — larger than the visual planet */}
+      <circle cx={0} cy={0} r={planet.size + 10} fill="transparent" />
       {/* Glow halo */}
-      <circle cx={0} cy={0} r={planet.size + 4} fill={color} fillOpacity={0.12} />
+      <circle cx={0} cy={0} r={planet.size + 5} fill={color} fillOpacity={0.12} />
       {/* Planet body */}
       <circle cx={0} cy={0} r={planet.size} fill={color} fillOpacity={0.9} />
-      {/* Highlight */}
-      <circle cx={-planet.size * 0.3} cy={-planet.size * 0.3} r={planet.size * 0.35} fill="rgba(255,255,255,0.25)" />
-      {/* Value */}
+      {/* Specular highlight */}
+      <circle
+        cx={-planet.size * 0.3} cy={-planet.size * 0.3}
+        r={planet.size * 0.32}
+        fill="rgba(255,255,255,0.22)"
+      />
+      {/* Value label above planet */}
       <text
-        x={0} y={-(planet.size + 4)}
+        x={0} y={-(planet.size + 5)}
         textAnchor="middle" fill="white"
         fontSize={7} fontWeight={700}
-        style={{ userSelect: 'none' }}
+        style={{ userSelect: 'none', pointerEvents: 'none' }}
       >
         {planet.value}
       </text>
-      {/* Label */}
+      {/* Group label below planet */}
       <text
-        x={0} y={planet.size + 10}
+        x={0} y={planet.size + 11}
         textAnchor="middle" fill="rgba(255,255,255,0.55)"
         fontSize={5.5}
-        style={{ userSelect: 'none' }}
+        style={{ userSelect: 'none', pointerEvents: 'none' }}
       >
         {planet.label}
       </text>
@@ -358,10 +359,119 @@ function PlanetOrbit({ planet, starCx, starCy, startFraction, color }: {
   );
 }
 
+/** Converts a React pointer event's clientX/Y to SVG coordinate space */
+function getSvgPt(e: React.PointerEvent<SVGGElement>): { x: number; y: number } {
+  const svg = (e.currentTarget as Element).closest('svg') as SVGSVGElement;
+  const rect = svg.getBoundingClientRect();
+  const raw = svg.getAttribute('viewBox') ?? '0 0 1000 680';
+  const [vx, vy, vw, vh] = raw.trim().split(/\s+/).map(Number);
+  return {
+    x: vx + ((e.clientX - rect.left) / rect.width) * vw,
+    y: vy + ((e.clientY - rect.top) / rect.height) * vh,
+  };
+}
+
 function SolarSystem({ goal }: { goal: Goal }) {
   const planets = goal.planets;
   if (!planets?.length) return null;
   const n = planets.length;
+
+  // Refs for direct DOM updates (no React re-renders during animation)
+  const groupRefs = useRef<(SVGGElement | null)[]>(Array(n).fill(null));
+  const stateRef = useRef({
+    phases: planets.map((_, i) => i / n),   // each planet's current orbit phase [0,1)
+    speed: 1,                                 // global speed multiplier (decays → 1)
+    drag: null as {
+      idx: number;
+      lastAngle: number;
+      lastTime: number;
+      vel: number;        // angular velocity in rad/s at moment of release
+    } | null,
+  });
+
+  // Single shared RAF loop — advances phases and writes SVG transforms
+  useEffect(() => {
+    let raf: number;
+    let prev = performance.now();
+
+    const tick = (now: number) => {
+      const dt = Math.min((now - prev) / 1000, 0.05);
+      prev = now;
+      const s = stateRef.current;
+
+      // Exponential decay of speed multiplier back to 1.0
+      s.speed = 1 + (s.speed - 1) * Math.exp(-dt * 0.55);
+      if (Math.abs(s.speed - 1) < 0.002) s.speed = 1;
+
+      planets.forEach((p, i) => {
+        // Dragged planet: its phase is set directly from the cursor, not advanced by time
+        if (!s.drag || s.drag.idx !== i) {
+          s.phases[i] = (s.phases[i] + (dt / p.period) * s.speed) % 1;
+        }
+        const angle = s.phases[i] * 2 * Math.PI;
+        const x = goal.cx + Math.cos(angle) * p.orbitRadius;
+        const y = goal.cy + Math.sin(angle) * p.orbitRadius;
+        groupRefs.current[i]?.setAttribute(
+          'transform', `translate(${x.toFixed(2)},${y.toFixed(2)})`
+        );
+      });
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Pointer handlers (drag-to-fling mechanic) ──────────────────────────────
+
+  const onDown = (e: React.PointerEvent<SVGGElement>, idx: number) => {
+    e.stopPropagation();
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
+    const pt = getSvgPt(e);
+    const a = Math.atan2(pt.y - goal.cy, pt.x - goal.cx);
+    stateRef.current.drag = { idx, lastAngle: a, lastTime: performance.now(), vel: 0 };
+  };
+
+  const onMove = (e: React.PointerEvent<SVGGElement>, idx: number) => {
+    const d = stateRef.current.drag;
+    if (!d || d.idx !== idx) return;
+
+    const pt = getSvgPt(e);
+    const a = Math.atan2(pt.y - goal.cy, pt.x - goal.cx);
+    const now = performance.now();
+    const dt = (now - d.lastTime) / 1000;
+
+    if (dt > 0.005) {
+      let da = a - d.lastAngle;
+      // Unwrap angle to avoid discontinuity at ±π
+      if (da > Math.PI)  da -= 2 * Math.PI;
+      if (da < -Math.PI) da += 2 * Math.PI;
+      d.vel = da / dt;
+    }
+
+    // Snap planet position to cursor angle on the orbit circle
+    stateRef.current.phases[idx] = ((a / (2 * Math.PI)) % 1 + 1) % 1;
+    d.lastAngle = a;
+    d.lastTime = now;
+  };
+
+  const onUp = (e: React.PointerEvent<SVGGElement>, idx: number) => {
+    const d = stateRef.current.drag;
+    if (!d || d.idx !== idx) return;
+
+    // Convert angular velocity at release into a speed multiplier
+    // (based on this planet's natural angular velocity = 2π / period)
+    const naturalAngVel = (2 * Math.PI) / planets[idx].period;
+    const mult = d.vel / naturalAngVel;
+    if (mult > 1.5) {
+      // All planets inherit proportionally (relative speeds maintained)
+      stateRef.current.speed = Math.min(mult, 14);
+    }
+
+    stateRef.current.drag = null;
+  };
 
   return (
     <motion.g
@@ -383,13 +493,14 @@ function SolarSystem({ goal }: { goal: Goal }) {
       ))}
       {/* Planets */}
       {planets.map((p, i) => (
-        <PlanetOrbit
+        <PlanetBody
           key={p.label}
           planet={p}
-          starCx={goal.cx}
-          starCy={goal.cy}
-          startFraction={i / n}
           color={p.color ?? goal.nodeColor}
+          groupRef={(el) => { groupRefs.current[i] = el; }}
+          onPointerDown={(e) => onDown(e, i)}
+          onPointerMove={(e) => onMove(e, i)}
+          onPointerUp={(e) => onUp(e, i)}
         />
       ))}
     </motion.g>
