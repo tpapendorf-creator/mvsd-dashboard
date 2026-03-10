@@ -37,6 +37,15 @@ export interface Practice {
   text: string;
 }
 
+export interface Planet {
+  label: string;       // 2–3 word label shown below the planet
+  value: string;       // stat value, e.g. "52.4%" or "+27 pts"
+  orbitRadius: number; // SVG units from the star center
+  period: number;      // seconds per full orbit
+  size: number;        // planet circle radius in SVG units
+  color?: string;      // defaults to the goal's nodeColor
+}
+
 export interface Goal {
   id: string;
   title: string;
@@ -63,6 +72,7 @@ export interface Goal {
   callout?: { value: string; label: string };
   charts: ChartDef[];
   practices: Practice[];
+  planets?: Planet[];
 }
 
 // ─── Colour palette ───────────────────────────────────────────────────────────
@@ -143,6 +153,12 @@ export const goals: Goal[] = [
       { level: 'school',   text: 'Daily attendance monitoring with same-day outreach for unexcused absences' },
       { level: 'educator', text: 'Culturally welcoming classroom environments where every student is known by name' },
       { level: 'educator', text: 'Home-connection practices that honor family language and culture' },
+    ],
+    planets: [
+      { label: 'All Students',    value: '65%', orbitRadius: 58,  period: 26, size: 10 },
+      { label: 'TBIP',            value: '64%', orbitRadius: 78,  period: 33, size: 10 },
+      { label: 'Disabilities',    value: '62%', orbitRadius: 98,  period: 39, size: 10 },
+      { label: 'Hispanic/Latino', value: '56%', orbitRadius: 118, period: 45, size: 10 },
     ],
   },
 
@@ -225,6 +241,13 @@ export const goals: Goal[] = [
       { level: 'educator', text: 'Daily small-group reading instruction differentiated by IRLA level' },
       { level: 'educator', text: 'Independent reading conferences to advance individual reading identities' },
     ],
+    planets: [
+      { label: 'All Students',    value: '52.4%',     orbitRadius: 58,  period: 24, size: 10 },
+      { label: 'Gain since 2023', value: '+27.7 pts', orbitRadius: 78,  period: 30, size: 10 },
+      { label: 'Hispanic/Latino', value: '44%',       orbitRadius: 98,  period: 36, size: 10 },
+      { label: 'TBIP',            value: '34%',       orbitRadius: 118, period: 42, size: 10 },
+      { label: 'Disabilities',    value: '31%',       orbitRadius: 138, period: 49, size: 10 },
+    ],
   },
 
   // ── 2 ── Strong Foundations — Grade 6 High Growth ─────────────────────────
@@ -261,6 +284,12 @@ export const goals: Goal[] = [
       { level: 'school',   text: 'School-level data teams analyze growth trajectories each quarter' },
       { level: 'educator', text: 'Text complexity scaffolding to accelerate below-grade readers toward grade level' },
       { level: 'educator', text: 'Writing-to-learn strategies embedded across content areas' },
+    ],
+    planets: [
+      { label: 'Skagit Academy', value: '67%', orbitRadius: 58,  period: 22, size: 10 },
+      { label: 'Mt Baker MS',    value: '47%', orbitRadius: 78,  period: 28, size: 10 },
+      { label: 'District Avg',   value: '38%', orbitRadius: 98,  period: 35, size: 10 },
+      { label: 'LaVenture MS',   value: '30%', orbitRadius: 118, period: 42, size: 10 },
     ],
   },
 
@@ -303,6 +332,12 @@ export const goals: Goal[] = [
       { level: 'educator', text: 'Flexible grouping rotated quarterly based on STAR data' },
       { level: 'educator', text: 'High-leverage instructional routines that prioritize conceptual understanding' },
     ],
+    planets: [
+      { label: 'At Benchmark',   value: '48%',   orbitRadius: 58,  period: 24, size: 10 },
+      { label: 'On Watch',       value: '15.8%', orbitRadius: 78,  period: 30, size: 10 },
+      { label: 'Intervention',   value: '19.7%', orbitRadius: 98,  period: 37, size: 10 },
+      { label: 'Urgent Interv.', value: '16.5%', orbitRadius: 118, period: 44, size: 10 },
+    ],
   },
 
   // ── 4 ── Grade Level Mastery — 9th Grade On Track ─────────────────────────
@@ -342,6 +377,12 @@ export const goals: Goal[] = [
       { level: 'school',   text: 'Freshman Focus advisory programs with dedicated counselor check-ins' },
       { level: 'educator', text: 'Strong teacher-student relationships — every student connected to a caring adult' },
     ],
+    planets: [
+      { label: 'All Students',    value: '79.9%', orbitRadius: 58,  period: 25, size: 10 },
+      { label: 'Hispanic/Latino', value: '79.5%', orbitRadius: 78,  period: 32, size: 10 },
+      { label: 'Disabilities',    value: '78.7%', orbitRadius: 98,  period: 39, size: 10 },
+      { label: 'TBIP',            value: '75%',   orbitRadius: 118, period: 46, size: 10 },
+    ],
   },
 
   // ── 5 ── Navigating for the Future — Seal of Biliteracy ──────────────────
@@ -378,6 +419,13 @@ export const goals: Goal[] = [
       { level: 'system',   text: 'World Language course access expanded to meet Seal eligibility requirements' },
       { level: 'school',   text: 'Senior-year Seal preparation cohorts with dedicated coaching and testing support' },
       { level: 'educator', text: 'Affirming bilingual student identities as academic and cultural strengths' },
+    ],
+    planets: [
+      { label: 'Class of 2024',   value: '18%', orbitRadius: 58,  period: 22, size: 10 },
+      { label: 'Class of 2023',   value: '15%', orbitRadius: 78,  period: 28, size: 10 },
+      { label: 'Class of 2022',   value: '12%', orbitRadius: 98,  period: 35, size: 10 },
+      { label: '2031 Goal',       value: '35%', orbitRadius: 118, period: 42, size: 10 },
+      { label: 'Hispanic/Latino', value: '57%', orbitRadius: 138, period: 49, size: 10 },
     ],
   },
 
@@ -417,6 +465,13 @@ export const goals: Goal[] = [
       { level: 'system',   text: 'Dropout prevention partnerships with community organizations' },
       { level: 'school',   text: 'Counselor caseload structured to prioritize students most at risk of not graduating' },
       { level: 'educator', text: 'Relationship-centered teaching that keeps students connected to school through adversity' },
+    ],
+    planets: [
+      { label: 'MVSD 2022-23',  value: '82%',    orbitRadius: 58,  period: 24, size: 10 },
+      { label: 'WA State',      value: '83.6%',  orbitRadius: 78,  period: 30, size: 10 },
+      { label: 'National',      value: '87.4%',  orbitRadius: 98,  period: 37, size: 10 },
+      { label: 'MVSD 2018-19',  value: '74%',    orbitRadius: 118, period: 44, size: 10 },
+      { label: "Gain since '19", value: '+8 pts', orbitRadius: 138, period: 51, size: 10 },
     ],
   },
 ];

@@ -1,6 +1,6 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import { motion, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion';
-import { goals, type Goal, EDGES } from '../data/goals';
+import { goals, type Goal, type Planet, EDGES } from '../data/goals';
 import { TOA_LAYERS, STUDENT_IDENTITY, MISSION } from '../data/toa';
 import { useStore } from '../store';
 
@@ -306,80 +306,92 @@ function GoalNode({ goal, index, isSelected, isHovered, isDimmed, onSelect, onHo
   );
 }
 
-// ─── In-map stat card ──────────────────────────────────────────────────────────
+// ─── Solar system — orbiting planet ────────────────────────────────────────────
 
-const CARD_POS: Record<string, { dx: number; dy: number }> = {
-  attendance:  { dx: -97,  dy:  52  },
-  irla:        { dx: -215, dy:  18  },
-  grade6:      { dx: -218, dy: -30  },
-  msmath:      { dx: -97,  dy: -128 },
-  ninth:       { dx:  15,  dy: -128 },
-  biliteracy:  { dx:  18,  dy: -30  },
-  graduation:  { dx:  18,  dy:  18  },
-};
+function PlanetOrbit({ planet, starCx, starCy, startFraction, color }: {
+  planet: Planet; starCx: number; starCy: number; startFraction: number; color: string;
+}) {
+  const groupRef = useRef<SVGGElement>(null);
 
-function InMapCard({ goal }: { goal: Goal }) {
-  const off = CARD_POS[goal.id] ?? { dx: -97, dy: 52 };
-  const x = goal.cx + off.dx;
-  const y = goal.cy + off.dy;
-  const W = 195, pad = 12;
-  const H = goal.callout ? 118 : 90;
-  const barTrack = W - pad * 2;
-  const barFill  = Math.min(barTrack, barTrack * (goal.currentPct / goal.targetPct));
+  useEffect(() => {
+    let raf: number;
+    const { period, orbitRadius } = planet;
+    const tick = () => {
+      const t = ((performance.now() / 1000 / period) + startFraction) % 1;
+      const x = starCx + Math.cos(t * 2 * Math.PI) * orbitRadius;
+      const y = starCy + Math.sin(t * 2 * Math.PI) * orbitRadius;
+      groupRef.current?.setAttribute('transform', `translate(${x.toFixed(2)},${y.toFixed(2)})`);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <g ref={groupRef} style={{ pointerEvents: 'none' }}>
+      {/* Glow halo */}
+      <circle cx={0} cy={0} r={planet.size + 4} fill={color} fillOpacity={0.12} />
+      {/* Planet body */}
+      <circle cx={0} cy={0} r={planet.size} fill={color} fillOpacity={0.9} />
+      {/* Highlight */}
+      <circle cx={-planet.size * 0.3} cy={-planet.size * 0.3} r={planet.size * 0.35} fill="rgba(255,255,255,0.25)" />
+      {/* Value */}
+      <text
+        x={0} y={-(planet.size + 4)}
+        textAnchor="middle" fill="white"
+        fontSize={7} fontWeight={700}
+        style={{ userSelect: 'none' }}
+      >
+        {planet.value}
+      </text>
+      {/* Label */}
+      <text
+        x={0} y={planet.size + 10}
+        textAnchor="middle" fill="rgba(255,255,255,0.55)"
+        fontSize={5.5}
+        style={{ userSelect: 'none' }}
+      >
+        {planet.label}
+      </text>
+    </g>
+  );
+}
+
+function SolarSystem({ goal }: { goal: Goal }) {
+  const planets = goal.planets;
+  if (!planets?.length) return null;
+  const n = planets.length;
 
   return (
     <motion.g
-      initial={{ opacity: 0, scale: 0.82 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.78 }}
-      style={{ transformOrigin: `${goal.cx}px ${goal.cy}px` }}
-      transition={{ type: 'spring', stiffness: 300, damping: 28, delay: 0.18 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, delay: 0.15 }}
     >
-      {/* Drop shadow */}
-      <rect x={x + 3} y={y + 3} width={W} height={H} rx={10} fill="rgba(0,0,0,0.45)" />
-      {/* Card body */}
-      <rect x={x} y={y} width={W} height={H} rx={10} fill="rgba(5,11,28,0.95)" stroke={goal.nodeColor} strokeOpacity={0.35} strokeWidth={1} />
-
-      {/* Area label */}
-      <text x={x + pad} y={y + pad + 9} fill={goal.areaColor} fontSize={7.5} fontWeight={700} style={{ userSelect: 'none', pointerEvents: 'none' }}>
-        {goal.areaLabel.toUpperCase()}
-      </text>
-
-      {/* Big number */}
-      <text x={x + pad} y={y + pad + 35} fill={goal.nodeColor} fontSize={23} fontWeight={800} style={{ userSelect: 'none', pointerEvents: 'none' }}>
-        {goal.currentPct}%
-      </text>
-      <text x={x + pad + 65} y={y + pad + 35} fill="rgba(255,255,255,0.4)" fontSize={8} style={{ userSelect: 'none', pointerEvents: 'none' }}>
-        {goal.currentLabel}
-      </text>
-
-      {/* Progress bar */}
-      <rect x={x + pad} y={y + 57} width={barTrack} height={4} rx={2} fill="rgba(255,255,255,0.08)" />
-      <motion.rect
-        x={x + pad} y={y + 57} height={4} rx={2}
-        fill={goal.nodeColor}
-        initial={{ width: 0 }}
-        animate={{ width: barFill }}
-        transition={{ duration: 0.7, ease: 'easeOut', delay: 0.3 }}
-      />
-
-      {/* Goal text */}
-      <text x={x + pad} y={y + 72} fill="rgba(255,255,255,0.3)" fontSize={7.5} style={{ userSelect: 'none', pointerEvents: 'none' }}>
-        Goal: {goal.targetPct}% by 2031
-      </text>
-
-      {/* Callout */}
-      {goal.callout && (
-        <>
-          <line x1={x + pad} y1={y + 80} x2={x + W - pad} y2={y + 80} stroke="rgba(255,255,255,0.07)" strokeWidth={1} />
-          <text x={x + pad} y={y + 94} fill="white" fontSize={9} fontWeight={700} style={{ userSelect: 'none', pointerEvents: 'none' }}>
-            {goal.callout.value}
-          </text>
-          <text x={x + pad} y={y + 107} fill="rgba(255,255,255,0.38)" fontSize={7.5} style={{ userSelect: 'none', pointerEvents: 'none' }}>
-            {goal.callout.label}
-          </text>
-        </>
-      )}
+      {/* Orbit guide rings */}
+      {planets.map((p) => (
+        <circle
+          key={`ring-${p.label}`}
+          cx={goal.cx} cy={goal.cy} r={p.orbitRadius}
+          fill="none"
+          stroke="rgba(255,255,255,0.07)"
+          strokeWidth={0.5}
+          strokeDasharray="3 6"
+        />
+      ))}
+      {/* Planets */}
+      {planets.map((p, i) => (
+        <PlanetOrbit
+          key={p.label}
+          planet={p}
+          starCx={goal.cx}
+          starCy={goal.cy}
+          startFraction={i / n}
+          color={p.color ?? goal.nodeColor}
+        />
+      ))}
     </motion.g>
   );
 }
@@ -402,7 +414,7 @@ export function ConstellationCanvas() {
 
   useEffect(() => {
     if (selectedGoal) {
-      const zoom = 2.35;
+      const zoom = 3.2;
       const newW = 1000 / zoom;
       const newH = 680 / zoom;
       vbX.set(Math.max(0, Math.min(1000 - newW, selectedGoal.cx - newW / 2)));
@@ -468,9 +480,9 @@ export function ConstellationCanvas() {
           />
         ))}
 
-        {/* In-map floating stat card */}
+        {/* Solar system — orbiting planets for selected goal */}
         <AnimatePresence>
-          {selectedGoal && <InMapCard key={selectedGoal.id} goal={selectedGoal} />}
+          {selectedGoal && <SolarSystem key={selectedGoal.id} goal={selectedGoal} />}
         </AnimatePresence>
       </motion.svg>
 
