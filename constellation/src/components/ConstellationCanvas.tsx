@@ -53,7 +53,7 @@ function NebulaClouds() {
           key={i}
           cx={c.cx} cy={c.cy} rx={c.rx} ry={c.ry}
           fill={`url(#neb-${i})`}
-          animate={{ opacity: [0.55, 1, 0.55], rx: [c.rx * 0.88, c.rx * 1.12, c.rx * 0.88] }}
+          animate={{ opacity: [0.55, 1, 0.55] }}
           transition={{ duration: c.dur, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }}
         />
       ))}
@@ -64,6 +64,7 @@ function NebulaClouds() {
 // ─── Star field (two parallax layers) ─────────────────────────────────────────
 
 function StarField() {
+  const { selectedGoalId } = useStore();
   const far = useMemo(() => {
     const rng = seededRng(42);
     return Array.from({ length: 145 }, (_, i) => ({
@@ -97,7 +98,7 @@ function StarField() {
         />
       ))}
       <motion.g
-        animate={{ x: [0, 5, 0, -4, 0], y: [0, 3, 6, 2, 0] }}
+        animate={selectedGoalId ? { x: 0, y: 0 } : { x: [0, 5, 0, -4, 0], y: [0, 3, 6, 2, 0] }}
         transition={{ duration: 48, repeat: Infinity, ease: 'easeInOut' }}
       >
         {near.map(s => (
@@ -244,10 +245,10 @@ function GoalNode({ goal, index, isSelected, isHovered, isDimmed, onSelect, onHo
       onMouseLeave={() => onHover(false)}
       style={{ cursor: 'pointer' }}
     >
-      {/* Ambient orbit drift */}
+      {/* Ambient orbit drift — paused when dimmed to reduce GPU load */}
       <motion.g
-        animate={{ x: [0, dx1, dx2, dx1 * 0.4, 0], y: [0, dy1, dy2, dy2 * 0.4, 0] }}
-        transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut' }}
+        animate={isDimmed ? { x: 0, y: 0 } : { x: [0, dx1, dx2, dx1 * 0.4, 0], y: [0, dy1, dy2, dy2 * 0.4, 0] }}
+        transition={isDimmed ? { duration: 0.4 } : { duration: dur, repeat: Infinity, ease: 'easeInOut' }}
       >
         {/* Selection halo */}
         {(isSelected || isHovered) && (
@@ -323,7 +324,7 @@ function PlanetBody({ planet, color, groupRef, onPointerDown, onPointerMove, onP
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      style={{ cursor: 'grab' }}
+      style={{ cursor: 'grab', willChange: 'transform' }}
     >
       {/* Invisible hit area — larger than the visual planet */}
       <circle cx={0} cy={0} r={planet.size + 10} fill="transparent" />
