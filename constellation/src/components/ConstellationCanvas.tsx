@@ -4,6 +4,15 @@ import { goals, type Goal, type Planet, EDGES } from '../data/goals';
 import { TOA_LAYERS, STUDENT_IDENTITY, MISSION } from '../data/toa';
 import { useStore } from '../store';
 
+// ─── Mobile / coarse-pointer detection ─────────────────────────────────────────
+
+function useCoarsePointer(): boolean {
+  return useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
+    []
+  );
+}
+
 // ─── Seeded RNG ────────────────────────────────────────────────────────────────
 
 function seededRng(seed: number) {
@@ -37,6 +46,7 @@ const CLOUDS = [
 ];
 
 function NebulaClouds() {
+  const mobile = useCoarsePointer();
   return (
     <g>
       <defs>
@@ -48,15 +58,19 @@ function NebulaClouds() {
           </radialGradient>
         ))}
       </defs>
-      {CLOUDS.map((c, i) => (
-        <motion.ellipse
-          key={i}
-          cx={c.cx} cy={c.cy} rx={c.rx} ry={c.ry}
-          fill={`url(#neb-${i})`}
-          animate={{ opacity: [0.55, 1, 0.55] }}
-          transition={{ duration: c.dur, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      ))}
+      {CLOUDS.map((c, i) =>
+        mobile ? (
+          <ellipse key={i} cx={c.cx} cy={c.cy} rx={c.rx} ry={c.ry} fill={`url(#neb-${i})`} opacity={0.7} />
+        ) : (
+          <motion.ellipse
+            key={i}
+            cx={c.cx} cy={c.cy} rx={c.rx} ry={c.ry}
+            fill={`url(#neb-${i})`}
+            animate={{ opacity: [0.55, 1, 0.55] }}
+            transition={{ duration: c.dur, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        )
+      )}
     </g>
   );
 }
@@ -65,17 +79,20 @@ function NebulaClouds() {
 
 function StarField() {
   const { selectedGoalId } = useStore();
+  const mobile = useCoarsePointer();
+
   const far = useMemo(() => {
     const rng = seededRng(42);
-    return Array.from({ length: 145 }, (_, i) => ({
+    return Array.from({ length: mobile ? 50 : 145 }, (_, i) => ({
       id: i, cx: rng() * 1000, cy: rng() * 680,
       r: rng() * 1.2 + 0.3,
       opacity: rng() * 0.5 + 0.1,
       dur: rng() * 4 + 2, delay: rng() * 6,
     }));
-  }, []);
+  }, [mobile]);
 
   const near = useMemo(() => {
+    if (mobile) return [];
     const rng = seededRng(99);
     return Array.from({ length: 40 }, (_, i) => ({
       id: i, cx: rng() * 1000, cy: rng() * 680,
@@ -83,35 +100,41 @@ function StarField() {
       opacity: rng() * 0.65 + 0.2,
       dur: rng() * 3 + 1.5, delay: rng() * 4,
     }));
-  }, []);
+  }, [mobile]);
 
   return (
     <g>
-      {far.map(s => (
-        <circle
-          key={s.id} cx={s.cx} cy={s.cy} r={s.r} fill="white"
-          className="star-twinkle"
-          style={{
-            '--duration': `${s.dur}s`, '--delay': `${s.delay}s`,
-            '--min-opacity': s.opacity * 0.2, '--max-opacity': s.opacity,
-          } as React.CSSProperties}
-        />
-      ))}
-      <motion.g
-        animate={selectedGoalId ? { x: 0, y: 0 } : { x: [0, 5, 0, -4, 0], y: [0, 3, 6, 2, 0] }}
-        transition={{ duration: 48, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        {near.map(s => (
+      {far.map(s =>
+        mobile ? (
+          <circle key={s.id} cx={s.cx} cy={s.cy} r={s.r} fill="white" opacity={s.opacity} />
+        ) : (
           <circle
             key={s.id} cx={s.cx} cy={s.cy} r={s.r} fill="white"
             className="star-twinkle"
             style={{
               '--duration': `${s.dur}s`, '--delay': `${s.delay}s`,
-              '--min-opacity': s.opacity * 0.3, '--max-opacity': s.opacity,
+              '--min-opacity': s.opacity * 0.2, '--max-opacity': s.opacity,
             } as React.CSSProperties}
           />
-        ))}
-      </motion.g>
+        )
+      )}
+      {!mobile && (
+        <motion.g
+          animate={selectedGoalId ? { x: 0, y: 0 } : { x: [0, 5, 0, -4, 0], y: [0, 3, 6, 2, 0] }}
+          transition={{ duration: 48, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          {near.map(s => (
+            <circle
+              key={s.id} cx={s.cx} cy={s.cy} r={s.r} fill="white"
+              className="star-twinkle"
+              style={{
+                '--duration': `${s.dur}s`, '--delay': `${s.delay}s`,
+                '--min-opacity': s.opacity * 0.3, '--max-opacity': s.opacity,
+              } as React.CSSProperties}
+            />
+          ))}
+        </motion.g>
+      )}
     </g>
   );
 }
@@ -199,7 +222,7 @@ function CenterNode({ onClick }: { onClick: () => void }) {
           key={r} cx={500} cy={340} r={r}
           fill="none" stroke="#008544"
           strokeOpacity={0.05 + i * 0.05} strokeWidth={i === 2 ? 1.5 : 0.8}
-          animate={{ r: [r, r * 1.07, r], opacity: [0.4, 0.9, 0.4] }}
+          animate={{ opacity: [0.3, 0.9, 0.3] }}
           transition={{ duration: 3 + i * 1.5, repeat: Infinity, ease: 'easeInOut', delay: i }}
         />
       ))}
@@ -253,10 +276,10 @@ function GoalNode({ goal, index, isSelected, isHovered, isDimmed, onSelect, onHo
         {/* Selection halo */}
         {(isSelected || isHovered) && (
           <motion.circle
-            cx={goal.cx} cy={goal.cy} r={r + 20}
+            cx={goal.cx} cy={goal.cy} r={r + 22}
             fill={goal.nodeColor} fillOpacity={0.07}
             stroke={goal.nodeColor} strokeOpacity={0.25} strokeWidth={1}
-            animate={{ r: [r + 16, r + 28, r + 16], opacity: [0.5, 1, 0.5] }}
+            animate={{ opacity: [0.35, 0.85, 0.35] }}
             transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
           />
         )}
@@ -519,8 +542,12 @@ function SolarSystem({ goal }: { goal: Goal }) {
 
 export function ConstellationCanvas() {
   const { selectedGoalId, hoveredGoalId, toaVisible, selectGoal, hoverGoal } = useStore();
+  const mobile = useCoarsePointer();
 
-  const SPRING = { stiffness: 62, damping: 17 };
+  // Faster spring on mobile — fewer frames of simultaneous spring + RAF work
+  const SPRING = mobile
+    ? { stiffness: 220, damping: 32 }
+    : { stiffness: 62,  damping: 17 };
   const vbX = useSpring(0,    SPRING);
   const vbY = useSpring(0,    SPRING);
   const vbW = useSpring(1000, SPRING);
