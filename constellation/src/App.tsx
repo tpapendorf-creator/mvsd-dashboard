@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Header } from './components/Header';
 import { ConstellationCanvas } from './components/ConstellationCanvas';
 import { GoalDrawer } from './components/GoalDrawer';
+import { SomosDrawer } from './components/SomosDrawer';
 import { useStore } from './store';
 import { goals } from './data/goals';
 import { MISSION } from './data/toa';
@@ -59,8 +60,8 @@ function PresentationBanner() {
 // ─── Help hint ────────────────────────────────────────────────────────────────
 
 function HelpHint() {
-  const { selectedGoalId } = useStore();
-  if (selectedGoalId) return null;
+  const { selectedGoalId, somosOpen } = useStore();
+  if (selectedGoalId || somosOpen) return null;
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -78,13 +79,14 @@ function HelpHint() {
 // ─── App root ─────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const { presentationMode, selectedGoalId, selectGoal, togglePresentation } = useStore();
+  const { presentationMode, selectedGoalId, selectGoal, togglePresentation, closeSomos } = useStore();
 
   // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         selectGoal(null);
+        closeSomos();
       }
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         const idx = selectedGoalId ? goals.findIndex((g) => g.id === selectedGoalId) : -1;
@@ -97,7 +99,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedGoalId, selectGoal]);
+  }, [selectedGoalId, selectGoal, closeSomos]);
 
   return (
     <div className="flex flex-col h-full bg-space-950 overflow-hidden">
@@ -120,8 +122,9 @@ export default function App() {
       <div className="flex-1 relative min-h-0">
         <ConstellationCanvas />
 
-        {/* Drawer — normal mode only */}
+        {/* Drawers — normal mode only */}
         {!presentationMode && <GoalDrawer />}
+        {!presentationMode && <SomosDrawer />}
 
         {/* Presentation mode banner */}
         {presentationMode && <PresentationBanner />}

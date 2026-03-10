@@ -541,7 +541,7 @@ function SolarSystem({ goal }: { goal: Goal }) {
 // ─── Main canvas ───────────────────────────────────────────────────────────────
 
 export function ConstellationCanvas() {
-  const { selectedGoalId, hoveredGoalId, toaVisible, selectGoal, hoverGoal } = useStore();
+  const { selectedGoalId, hoveredGoalId, toaVisible, selectGoal, hoverGoal, openSomos } = useStore();
   const mobile = useCoarsePointer();
 
   // Faster spring on mobile — fewer frames of simultaneous spring + RAF work
@@ -611,7 +611,7 @@ export function ConstellationCanvas() {
         <AnimatedEdges selectedIdx={selectedIdx} hoveredIdx={hoveredIdx} />
 
         {/* Center identity node */}
-        <CenterNode onClick={() => selectGoal(null)} />
+        <CenterNode onClick={openSomos} />
 
         {/* Goal nodes */}
         {goals.map((goal, i) => (
