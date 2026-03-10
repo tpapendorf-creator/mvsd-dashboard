@@ -130,10 +130,10 @@ function ToaRings() {
           transition={{ duration: 8 + i * 2, repeat: Infinity, ease: 'easeInOut', delay: i * 1.5 }}
         />
       ))}
-      {TOA_LAYERS.map(layer => (
+      {TOA_LAYERS.map((layer, i) => (
         <text
           key={`lbl-${layer.key}`}
-          x={500 + layer.radius + 6} y={339}
+          x={500 + layer.radius + 6} y={i % 2 === 0 ? 332 : 348}
           fill={layer.color} fillOpacity={0.45}
           fontSize={8.5} fontWeight={500}
           style={{ userSelect: 'none', pointerEvents: 'none' }}
@@ -399,9 +399,11 @@ function SolarSystem({ goal }: { goal: Goal }) {
       prev = now;
       const s = stateRef.current;
 
-      // Exponential decay of speed multiplier back to 1.0
-      s.speed = 1 + (s.speed - 1) * Math.exp(-dt * 0.55);
-      if (Math.abs(s.speed - 1) < 0.002) s.speed = 1;
+      // Exponential decay of speed multiplier back to 1.0 — only when not dragging
+      if (!s.drag) {
+        s.speed = 1 + (s.speed - 1) * Math.exp(-dt * 0.55);
+        if (Math.abs(s.speed - 1) < 0.002) s.speed = 1;
+      }
 
       planets.forEach((p, i) => {
         // Dragged planet: its phase is set directly from the cursor, not advanced by time
@@ -449,6 +451,11 @@ function SolarSystem({ goal }: { goal: Goal }) {
       if (da > Math.PI)  da -= 2 * Math.PI;
       if (da < -Math.PI) da += 2 * Math.PI;
       d.vel = da / dt;
+
+      // Apply speed to ALL planets in real-time while dragging
+      const naturalAngVel = (2 * Math.PI) / planets[idx].period;
+      const mult = d.vel / naturalAngVel;
+      stateRef.current.speed = mult > 0.1 ? Math.min(mult, 14) : Math.max(0, mult + 1);
     }
 
     // Snap planet position to cursor angle on the orbit circle
